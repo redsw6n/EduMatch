@@ -1,18 +1,22 @@
 import { useNavigation } from '@react-navigation/native';
+import { LinearGradient } from 'expo-linear-gradient';
 import {
   AlertTriangle,
+  Bell,
   BookOpen,
-  Check,
   ChevronRight,
   Edit3,
   GraduationCap,
   LogOut,
   MapPin,
+  MessageCircle,
+  Settings,
   User,
   Wallet
 } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
+  Image,
   Modal,
   ScrollView,
   StyleSheet,
@@ -23,60 +27,52 @@ import {
 } from "react-native";
 import { useAuth } from '../context/AuthContext';
 import { useFavorites, type FavoriteUniversity } from '../context/FavoritesContext';
-
-// ---------------- Types ----------------
-type AcademicBackground = {
-  strand: string;
-  gpa: string;
-  school: string;
-};
-
-type Preferences = {
-  budget: string;
-  course: string;
-  location: string;
-};
+import { useNotifications } from '../context/NotificationsContext';
+import { useProfileCompletion } from '../context/ProfileCompletionContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 // ---------------- Helper Components ----------------
 const InfoRow = ({ 
   icon, 
   label, 
   value,
-  isEditing = false,
-  onChangeText
+  iconBgColor = "#F3F4F6",
+  styles
 }: { 
   icon: React.ReactNode; 
   label: string; 
   value: string;
-  isEditing?: boolean;
-  onChangeText?: (text: string) => void;
+  iconBgColor?: string;
+  styles: any;
 }) => (
   <View style={styles.infoRow}>
-    <View style={styles.infoIcon}>
+    <View style={[styles.infoIcon, { backgroundColor: iconBgColor }]}>
       {icon}
     </View>
     <View style={styles.infoContent}>
       <Text style={styles.infoLabel}>{label}</Text>
-      {isEditing ? (
-        <TextInput
-          style={styles.infoInput}
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={`Enter ${label.toLowerCase()}`}
-          placeholderTextColor="#9CA3AF"
-        />
-      ) : (
-        <Text style={[styles.infoValue, !value && styles.placeholderText]}>
-          {value || `No ${label.toLowerCase()} added`}
-        </Text>
-      )}
+      <Text style={[styles.infoValue, !value && styles.placeholderText]}>
+        {value || `No ${label.toLowerCase()} added`}
+      </Text>
     </View>
   </View>
 );
 
-const FavoriteUniversityCard = ({ university }: { university: FavoriteUniversity }) => (
+const FavoriteUniversityCard = ({ 
+  university, 
+  styles 
+}: { 
+  university: FavoriteUniversity;
+  styles: any;
+}) => (
   <TouchableOpacity style={styles.favoriteUniversityCard}>
-    <View style={styles.universityLogoPlaceholder} />
+    <View style={styles.universityLogoContainer}>
+      <Image 
+        source={require('../../assets/images/logomark.png')}
+        style={styles.universityLogo}
+        resizeMode="contain"
+      />
+    </View>
     <View style={styles.universityInfo}>
       <Text style={styles.universityName}>{university.name}</Text>
       <View style={styles.universityLocationRow}>
@@ -93,11 +89,13 @@ const FavoriteUniversityCard = ({ university }: { university: FavoriteUniversity
 const SignOutConfirmationModal = ({ 
   visible, 
   onConfirm, 
-  onCancel 
+  onCancel,
+  styles
 }: { 
   visible: boolean; 
   onConfirm: () => void; 
-  onCancel: () => void; 
+  onCancel: () => void;
+  styles: any;
 }) => (
   <Modal
     animationType="fade"
@@ -140,32 +138,28 @@ const SignOutConfirmationModal = ({
 
 // ---------------- Component ----------------
 export default function ProfileScreen() {
+  const colors = useThemedColors();
   const { favoriteUniversities } = useFavorites();
   const { signOut, user: authUser } = useAuth();
+  const { unreadCount } = useNotifications();
+  const { profileData, updateAcademicBackground, updatePreferences } = useProfileCompletion();
   const navigation = useNavigation();
   
-  const [user] = useState({
-    name: "John Doe",
+  // Memoize styles to prevent recreation on every render
+  const styles = useMemo(() => createStyles(colors), [colors]);
+  
+  const user = {
+    name: authUser?.firstName && authUser?.lastName 
+      ? `${authUser.firstName} ${authUser.lastName}`.trim()
+      : authUser?.firstName || authUser?.lastName || "User",
     email: authUser?.email || "user@example.com",
     avatar: null, // Will use placeholder
-  });
+  };
 
-  // Edit mode states
-  const [isEditingAcademic, setIsEditingAcademic] = useState(false);
-  const [isEditingPreferences, setIsEditingPreferences] = useState(false);
   const [showSignOutModal, setShowSignOutModal] = useState(false);
-
-  const [academicBackground, setAcademicBackground] = useState<AcademicBackground>({
-    strand: "",
-    gpa: "",
-    school: "",
-  });
-
-  const [preferences, setPreferences] = useState<Preferences>({
-    budget: "",
-    course: "",
-    location: "",
-  });
+  const [showAcademicModal, setShowAcademicModal] = useState(false);
+  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
+  const [showFavoriteUniversitiesModal, setShowFavoriteUniversitiesModal] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -184,32 +178,24 @@ export default function ProfileScreen() {
 
   const ProfileSection = ({ 
     title, 
-    children, 
-    showEdit = false, 
-    isEditing = false,
-    onEdit,
-    onSave
+    children,
+    showEdit = false,
+    onEdit
   }: { 
     title: string; 
     children: React.ReactNode; 
     showEdit?: boolean;
-    isEditing?: boolean;
     onEdit?: () => void;
-    onSave?: () => void;
   }) => (
     <View style={styles.section}>
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>{title}</Text>
         {showEdit && (
           <TouchableOpacity 
-            onPress={isEditing ? onSave : onEdit} 
-            style={[styles.editButton, isEditing && styles.saveButton]}
+            onPress={onEdit} 
+            style={styles.editButton}
           >
-            {isEditing ? (
-              <Check size={16} color="#FFFFFF" />
-            ) : (
-              <Edit3 size={16} color="#6B7280" />
-            )}
+            <Edit3 size={16} color="#6B7280" />
           </TouchableOpacity>
         )}
       </View>
@@ -219,86 +205,308 @@ export default function ProfileScreen() {
     </View>
   );
 
+  // Academic Background Modal Component
+  const AcademicBackgroundModal = () => {
+    const [tempAcademicBackground, setTempAcademicBackground] = useState(profileData.academicBackground);
+
+    const handleSave = async () => {
+      try {
+        await updateAcademicBackground(tempAcademicBackground);
+        setShowAcademicModal(false);
+      } catch (error) {
+        console.error('Failed to save academic background:', error);
+      }
+    };
+
+    const handleCancel = () => {
+      setTempAcademicBackground(profileData.academicBackground); // Reset to original values
+      setShowAcademicModal(false);
+    };
+
+    return (
+      <Modal
+        visible={showAcademicModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCancel}
+      >
+        <View style={styles.editModalContainer}>
+          <View style={styles.editModalHeader}>
+            <TouchableOpacity onPress={handleCancel}>
+              <Text style={styles.editModalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.editModalTitle}>Academic Background</Text>
+            <TouchableOpacity onPress={handleSave}>
+              <Text style={styles.editModalSaveText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView style={styles.editModalContent}>
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>Strand</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempAcademicBackground.strand}
+                onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, strand: text }))}
+                placeholder="Enter your strand"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>GPA</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempAcademicBackground.gpa}
+                onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, gpa: text }))}
+                placeholder="Enter your GPA"
+                placeholderTextColor="#9CA3AF"
+                keyboardType="numeric"
+              />
+            </View>
+
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>Senior High School</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempAcademicBackground.school}
+                onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, school: text }))}
+                placeholder="Enter your senior high school"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
+  // Preferences Modal Component
+  const PreferencesModal = () => {
+    const [tempPreferences, setTempPreferences] = useState(profileData.preferences);
+
+    const handleSave = async () => {
+      try {
+        await updatePreferences(tempPreferences);
+        setShowPreferencesModal(false);
+      } catch (error) {
+        console.error('Failed to save preferences:', error);
+      }
+    };
+
+    const handleCancel = () => {
+      setTempPreferences(profileData.preferences); // Reset to original values
+      setShowPreferencesModal(false);
+    };
+
+    return (
+      <Modal
+        visible={showPreferencesModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={handleCancel}
+      >
+        <View style={styles.editModalContainer}>
+          <View style={styles.editModalHeader}>
+            <TouchableOpacity onPress={handleCancel}>
+              <Text style={styles.editModalCancelText}>Cancel</Text>
+            </TouchableOpacity>
+            <Text style={styles.editModalTitle}>Preferences</Text>
+            <TouchableOpacity onPress={handleSave}>
+              <Text style={styles.editModalSaveText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+          
+          <ScrollView style={styles.editModalContent}>
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>Budget Range</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempPreferences.budget}
+                onChangeText={(text) => setTempPreferences(prev => ({ ...prev, budget: text }))}
+                placeholder="Enter your budget range"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>Preferred Course</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempPreferences.course}
+                onChangeText={(text) => setTempPreferences(prev => ({ ...prev, course: text }))}
+                placeholder="Enter your preferred course"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+
+            <View style={styles.editModalField}>
+              <Text style={styles.editModalLabel}>Preferred Location</Text>
+              <TextInput
+                style={styles.editModalInput}
+                value={tempPreferences.location}
+                onChangeText={(text) => setTempPreferences(prev => ({ ...prev, location: text }))}
+                placeholder="Enter your preferred location"
+                placeholderTextColor="#9CA3AF"
+              />
+            </View>
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
+  // Favorite Universities Modal Component
+  const FavoriteUniversitiesModal = () => {
+    return (
+      <Modal
+        visible={showFavoriteUniversitiesModal}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowFavoriteUniversitiesModal(false)}
+      >
+        <View style={styles.editModalContainer}>
+          <View style={styles.editModalHeader}>
+            <TouchableOpacity onPress={() => setShowFavoriteUniversitiesModal(false)}>
+              <Text style={styles.editModalCancelText}>Close</Text>
+            </TouchableOpacity>
+            <Text style={styles.editModalTitle}>Favorite Universities</Text>
+            <View style={{ width: 60 }} />
+          </View>
+          
+          <ScrollView style={styles.editModalContent}>
+            {favoriteUniversities.length > 0 ? (
+              <View style={styles.favoriteUniversitiesList}>
+                {favoriteUniversities.map((university) => (
+                  <View key={university.id} style={styles.favoriteUniversityCard}>
+                    <View style={styles.universityLogoContainer}>
+                      <Image 
+                        source={require('../../assets/images/logomark.png')}
+                        style={styles.universityLogo}
+                        resizeMode="contain"
+                      />
+                    </View>
+                    <View style={styles.universityInfo}>
+                      <Text style={styles.universityName}>{university.name}</Text>
+                      <View style={styles.universityLocationRow}>
+                        <MapPin size={12} color="#6B7280" />
+                        <Text style={styles.universityLocation}>{university.location}</Text>
+                      </View>
+                      <Text style={styles.universityFee}>{university.fee}</Text>
+                    </View>
+                  </View>
+                ))}
+              </View>
+            ) : (
+              <View style={styles.emptyStateContainer}>
+                <Text style={styles.emptyStateText}>No favorite universities yet</Text>
+                <Text style={styles.emptyStateSubtext}>
+                  Add universities to favorites by tapping the heart icon on university cards in the Explore page
+                </Text>
+              </View>
+            )}
+          </ScrollView>
+        </View>
+      </Modal>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Profile</Text>
+          <TouchableOpacity 
+            style={styles.notificationIcon}
+            onPress={() => (navigation as any).navigate('Notifications')}
+          >
+            <Bell size={24} color="#2A71D0" />
+            {unreadCount > 0 && (
+              <View style={styles.notificationBadge}>
+                <Text style={styles.notificationBadgeText}>
+                  {unreadCount > 99 ? '99+' : unreadCount.toString()}
+                </Text>
+              </View>
+            )}
+          </TouchableOpacity>
         </View>
 
         {/* Profile Card */}
         <View style={styles.profileCard}>
-          <View style={styles.avatarContainer}>
-            <View style={styles.avatarPlaceholder}>
-              <User size={40} color="#9CA3AF" />
+          <LinearGradient
+            colors={['#2A71D0', '#1E40AF']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.profileGradient}
+          >
+            <View style={styles.avatarContainer}>
+              <View style={styles.avatarPlaceholder}>
+                <User size={40} color="#9CA3AF" />
+              </View>
             </View>
-          </View>
-          <View style={styles.profileInfo}>
-            <Text style={styles.userName}>{user.name}</Text>
-            <Text style={styles.userEmail}>{user.email}</Text>
-          </View>
+            <View style={styles.profileInfo}>
+              <Text style={styles.userName}>{user.name}</Text>
+              <Text style={styles.userEmail}>{user.email}</Text>
+            </View>
+          </LinearGradient>
         </View>
 
         {/* Academic Background */}
         <ProfileSection 
-          title="Academic Background" 
+          title="Academic Background"
           showEdit={true}
-          isEditing={isEditingAcademic}
-          onEdit={() => setIsEditingAcademic(true)}
-          onSave={() => setIsEditingAcademic(false)}
+          onEdit={() => setShowAcademicModal(true)}
         >
           <InfoRow
-            icon={<BookOpen size={20} color="#6B7280" />}
+            icon={<BookOpen size={20} color="#ffffff" />}
             label="Strand"
-            value={academicBackground.strand}
-            isEditing={isEditingAcademic}
-            onChangeText={(text) => setAcademicBackground(prev => ({ ...prev, strand: text }))}
+            value={profileData.academicBackground.strand}
+            iconBgColor="#FFB800"
+            styles={styles}
           />
           <InfoRow
-            icon={<User size={20} color="#6B7280" />}
+            icon={<User size={20} color="#ffffff" />}
             label="GPA"
-            value={academicBackground.gpa}
-            isEditing={isEditingAcademic}
-            onChangeText={(text) => setAcademicBackground(prev => ({ ...prev, gpa: text }))}
+            value={profileData.academicBackground.gpa}
+            iconBgColor="#FFB800"
+            styles={styles}
           />
           <InfoRow
-            icon={<GraduationCap size={20} color="#6B7280" />}
-            label="University"
-            value={academicBackground.school}
-            isEditing={isEditingAcademic}
-            onChangeText={(text) => setAcademicBackground(prev => ({ ...prev, school: text }))}
+            icon={<GraduationCap size={20} color="#ffffff" />}
+            label="Senior High School"
+            value={profileData.academicBackground.school}
+            iconBgColor="#FFB800"
+            styles={styles}
           />
         </ProfileSection>
 
         {/* Preferences */}
         <ProfileSection 
-          title="Preferences" 
+          title="Preferences"
           showEdit={true}
-          isEditing={isEditingPreferences}
-          onEdit={() => setIsEditingPreferences(true)}
-          onSave={() => setIsEditingPreferences(false)}
+          onEdit={() => setShowPreferencesModal(true)}
         >
           <InfoRow
-            icon={<Wallet size={20} color="#6B7280" />}
+            icon={<Wallet size={20} color="#ffffff" />}
             label="Budget Range"
-            value={preferences.budget}
-            isEditing={isEditingPreferences}
-            onChangeText={(text) => setPreferences(prev => ({ ...prev, budget: text }))}
+            value={profileData.preferences.budget}
+            iconBgColor="#2ECC71"
+            styles={styles}
           />
           <InfoRow
-            icon={<BookOpen size={20} color="#6B7280" />}
+            icon={<BookOpen size={20} color="#ffffff" />}
             label="Preferred Course"
-            value={preferences.course}
-            isEditing={isEditingPreferences}
-            onChangeText={(text) => setPreferences(prev => ({ ...prev, course: text }))}
+            value={profileData.preferences.course}
+            iconBgColor="#2ECC71"
+            styles={styles}
           />
           <InfoRow
-            icon={<MapPin size={20} color="#6B7280" />}
+            icon={<MapPin size={20} color="#ffffff" />}
             label="Preferred Location"
-            value={preferences.location}
-            isEditing={isEditingPreferences}
-            onChangeText={(text) => setPreferences(prev => ({ ...prev, location: text }))}
+            value={profileData.preferences.location}
+            iconBgColor="#2ECC71"
+            styles={styles}
           />
         </ProfileSection>
 
@@ -307,14 +515,19 @@ export default function ProfileScreen() {
           {favoriteUniversities.length > 0 ? (
             <>
               <View style={styles.favoriteUniversitiesList}>
-                {favoriteUniversities.map((university) => (
-                  <FavoriteUniversityCard key={university.id} university={university} />
+                {favoriteUniversities.slice(0, 2).map((university) => (
+                  <FavoriteUniversityCard key={university.id} university={university} styles={styles} />
                 ))}
               </View>
-              <TouchableOpacity style={styles.viewAllButton}>
-                <Text style={styles.viewAllText}>View All Favorite Universities</Text>
-                <ChevronRight size={16} color="#2A71D0" />
-              </TouchableOpacity>
+              {favoriteUniversities.length > 2 && (
+                <TouchableOpacity 
+                  style={styles.viewAllButton}
+                  onPress={() => setShowFavoriteUniversitiesModal(true)}
+                >
+                  <Text style={styles.viewAllText}>View All Favorite Universities ({favoriteUniversities.length})</Text>
+                  <ChevronRight size={16} color="#2A71D0" />
+                </TouchableOpacity>
+              )}
             </>
           ) : (
             <View style={styles.emptyStateContainer}>
@@ -328,11 +541,14 @@ export default function ProfileScreen() {
 
         {/* Profile Settings */}
         <ProfileSection title="Profile Settings">
-          <TouchableOpacity style={styles.settingItem}>
+          <TouchableOpacity 
+            style={styles.settingItem}
+            onPress={() => (navigation as any).navigate('Settings')}
+          >
             <View style={styles.settingIcon}>
-              <Edit3 size={20} color="#2A71D0" />
+              <Settings size={20} color="#2A71D0" />
             </View>
-            <Text style={styles.settingText}>Edit Profile</Text>
+            <Text style={styles.settingText}>Settings</Text>
             <ChevronRight size={20} color="#6B7280" />
           </TouchableOpacity>
           
@@ -357,16 +573,40 @@ export default function ProfileScreen() {
         visible={showSignOutModal}
         onConfirm={handleSignOut}
         onCancel={() => setShowSignOutModal(false)}
+        styles={styles}
       />
+
+      {/* Academic Background Modal */}
+      <AcademicBackgroundModal />
+
+      {/* Preferences Modal */}
+      <PreferencesModal />
+
+      {/* Favorite Universities Modal */}
+      <FavoriteUniversitiesModal />
+      
+      {/* Floating Messages Button */}
+      <TouchableOpacity 
+        style={styles.floatingButton}
+        onPress={() => {
+          // Navigate to Conversations List screen
+          (navigation as any).navigate('ConversationsList');
+        }}
+        accessibilityRole="button"
+        accessibilityLabel="Open conversations"
+        activeOpacity={0.8}
+      >
+        <MessageCircle size={24} color="#ffffff" />
+      </TouchableOpacity>
     </View>
   );
 }
 
 // ---------------- Styles ----------------
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -380,18 +620,51 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontFamily: "Poppins",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 32,
+  },
+  notificationIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.backgroundSecondary,
+    borderWidth: 1.26,
+    borderColor: colors.border,
+    justifyContent: "center",
+    alignItems: "center",
+    position: "relative",
+  },
+  notificationBadge: {
+    position: "absolute",
+    top: -2,
+    right: -2,
+    backgroundColor: "#EF4444",
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  notificationBadgeText: {
+    color: "white",
+    fontSize: 11,
+    fontFamily: "Arimo",
+    fontWeight: "700",
+    textAlign: "center",
   },
 
   profileCard: {
-    backgroundColor: "white",
     marginHorizontal: 16,
     borderRadius: 16,
-    padding: 24,
     marginBottom: 24,
     borderWidth: 1.26,
     borderColor: "#E5E7EB",
+    overflow: 'hidden',
+  },
+  profileGradient: {
+    padding: 24,
     alignItems: "center",
   },
   avatarContainer: {
@@ -401,7 +674,7 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: "rgba(255, 255, 255, 0.20)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -413,7 +686,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#111827",
+    color: "#ffffff",
     lineHeight: 28,
     marginBottom: 4,
   },
@@ -421,7 +694,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: "rgba(255, 255, 255, 0.80)",
     lineHeight: 20,
   },
   section: {
@@ -451,10 +724,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.26,
     borderColor: "#E5E7EB",
   },
-  saveButton: {
-    backgroundColor: "#10B981",
-    borderColor: "#10B981",
-  },
   sectionContent: {
     backgroundColor: "white",
     marginHorizontal: 16,
@@ -474,7 +743,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#F3F4F6",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -521,14 +789,22 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: colors.border,
   },
-  universityLogoPlaceholder: {
+  universityLogoContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#E5E7EB",
+    backgroundColor: colors.backgroundSecondary,
     marginRight: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  universityLogo: {
+    width: 32,
+    height: 32,
   },
   universityInfo: {
     flex: 1,
@@ -537,7 +813,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 20,
     marginBottom: 2,
   },
@@ -710,5 +986,85 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: 'white',
     textAlign: 'center',
+  },
+  
+  // Floating Button
+  floatingButton: {
+    position: 'absolute',
+    bottom: 24,
+    right: 24,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#2A71D0', // Keep primary blue color
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
+    zIndex: 1000,
+  },
+
+  // Edit Modal Styles
+  editModalContainer: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  editModalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  editModalTitle: {
+    fontSize: 18,
+    fontFamily: 'Arimo',
+    fontWeight: '700',
+    color: '#111827',
+  },
+  editModalCancelText: {
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    fontWeight: '600',
+    color: '#6B7280',
+  },
+  editModalSaveText: {
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    fontWeight: '600',
+    color: '#2A71D0',
+  },
+  editModalContent: {
+    flex: 1,
+    padding: 16,
+  },
+  editModalField: {
+    marginBottom: 20,
+  },
+  editModalLabel: {
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 8,
+  },
+  editModalInput: {
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    backgroundColor: 'white',
   },
 });

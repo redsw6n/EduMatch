@@ -2,6 +2,7 @@ import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
   Alert,
+  Image,
   KeyboardAvoidingView,
   Platform,
   StyleSheet,
@@ -107,8 +108,14 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
         style={styles.keyboardAvoidingView}
       >
         <View style={styles.content}>
-          {/* Red curved header */}
-          <View style={styles.redHeader} />
+          {/* Header with icon */}
+          <View style={styles.headerContainer}>
+            <Image 
+              source={require('../../assets/images/icon.png')}
+              style={styles.headerIcon}
+              resizeMode="contain"
+            />
+          </View>
           
           {/* Sign In Title */}
           <Text style={styles.title}>Sign In</Text>
@@ -161,16 +168,21 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
                 onPress={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff size={20} color="#666666" />
+                  <EyeOff size={20} color="#000000" />
                 ) : (
-                  <Eye size={20} color="#666666" />
+                  <Eye size={20} color="#000000" />
                 )}
               </TouchableOpacity>
               {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
             </View>
             
             {/* Forgot Password */}
-            <TouchableOpacity style={styles.forgotPasswordContainer}>
+            <TouchableOpacity 
+              style={styles.forgotPasswordContainer}
+              onPress={() => navigation.navigate('ForgotPassword')}
+              accessibilityLabel="Forgot Password"
+              accessibilityRole="button"
+            >
               <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
             </TouchableOpacity>
             
@@ -210,15 +222,24 @@ const styles = StyleSheet.create({
     position: 'relative',
   },
   // Red curved header
-  redHeader: {
+  // Header with icon background
+  headerContainer: {
     position: 'absolute',
     width: 390,
     height: 220,
     left: 0,
     top: 0,
-    backgroundColor: '#FF0000',
+    backgroundColor: '#F9FAFB',
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  headerIcon: {
+    width: 120,
+    height: 120,
   },
   // Sign In title positioned below red header
   title: {
@@ -293,7 +314,7 @@ const styles = StyleSheet.create({
     left: 12,
     top: 16,
     fontSize: 14,
-    color: '#666666',
+    color: '#000000',
     backgroundColor: 'transparent',
     paddingHorizontal: 4,
     zIndex: 1,
@@ -302,7 +323,7 @@ const styles = StyleSheet.create({
   floatingLabelActive: {
     top: -8,
     fontSize: 12,
-    color: '#666666',
+    color: '#000000',
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
   },

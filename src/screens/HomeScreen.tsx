@@ -1,31 +1,36 @@
 import { BottomTabNavigationProp, createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import {
-    CompositeNavigationProp,
-    RouteProp,
-    useNavigation,
+  CompositeNavigationProp,
+  RouteProp,
+  useNavigation,
 } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { LinearGradient } from 'expo-linear-gradient';
 import {
-    Bell,
-    FileText,
-    Home,
-    MapPin,
-    Search,
-    Target,
-    TrendingUp,
-    User
+  FileText,
+  Home,
+  MapPin,
+  Search,
+  Target,
+  TrendingUp,
+  User
 } from "lucide-react-native";
 import React from "react";
 import {
-    FlatList,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  FlatList,
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
+import { useProfileCompletion } from '../context/ProfileCompletionContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 import { RootStackParamList } from "../navigation/AppNavigator";
+import ApplicationsScreen from "./ApplicationsScreen";
 import ExploreScreen from "./ExploreScreen";
+import MatchesScreen from "./MatchesScreen";
 import ProfileScreen from "./ProfileScreen";
 
 // ---------------- Types ----------------
@@ -55,6 +60,9 @@ const Tab = createBottomTabNavigator<RootTabParamList>();
 // ---------------- Screens ----------------
 function HomeTabScreen() {
   const navigation = useNavigation<HomeScreenNavigationProp>();
+  const colors = useThemedColors();
+  const { completionPercentage } = useProfileCompletion();
+  const styles = createStyles(colors);
 
   const handleSchoolPress = (school: School) => {
     navigation.navigate('SchoolProfile', {
@@ -121,38 +129,46 @@ function HomeTabScreen() {
   ];
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView 
+      style={styles.container}
+      contentContainerStyle={styles.scrollContent}
+      showsVerticalScrollIndicator={false}
+    >
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerText}>
-          <Text style={styles.greeting}>Welcome back!</Text>
+          <Text style={styles.greeting}>Welcome to EduMatch!</Text>
           <Text style={styles.subtitle}>
             Let's find your perfect college match
           </Text>
         </View>
-        <TouchableOpacity style={styles.notificationButton}>
-          <Bell size={16} color="#111827" />
-        </TouchableOpacity>
       </View>
 
       {/* Confidence Tracker */}
       <View style={styles.confidenceCard}>
-        <View style={styles.confidenceHeader}>
-          <TrendingUp size={20} color="#111827" />
-          <Text style={styles.confidenceTitle}>Confidence Tracker</Text>
-        </View>
-        <View style={styles.confidenceContent}>
-          <View style={styles.progressRow}>
-            <Text style={styles.progressLabel}>Profile Completion</Text>
-            <Text style={styles.progressPercent}>0%</Text>
+        <LinearGradient
+          colors={['#10B981', '#059669']}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.confidenceGradient}
+        >
+          <View style={styles.confidenceHeader}>
+            <TrendingUp size={20} color="#ffffff" />
+            <Text style={styles.confidenceTitle}>Confidence Tracker</Text>
           </View>
-          <View style={styles.progressBarBackground}>
-            <View style={[styles.progressBarFill, { width: "0%" }]} />
+          <View style={styles.confidenceContent}>
+            <View style={styles.progressRow}>
+              <Text style={styles.progressLabel}>Profile Completion</Text>
+              <Text style={styles.progressPercent}>{completionPercentage}%</Text>
+            </View>
+            <View style={styles.progressBarBackground}>
+              <View style={[styles.progressBarFill, { width: `${completionPercentage}%` }]} />
+            </View>
+            <Text style={styles.progressSubtext}>
+              Complete your profile to get better matches
+            </Text>
           </View>
-          <Text style={styles.progressSubtext}>
-            Complete your profile to get better matches
-          </Text>
-        </View>
+        </LinearGradient>
       </View>
 
       {/* Quick Actions */}
@@ -169,21 +185,30 @@ function HomeTabScreen() {
             <Text style={styles.quickActionLabel}>Find Schools</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.quickActionCard}>
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => navigation.navigate('Matches')}
+          >
             <View style={[styles.quickActionIcon, { backgroundColor: '#2ECC71' }]}>
               <Target size={16} color="white" />
             </View>
             <Text style={styles.quickActionLabel}>My Matches</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.quickActionCard}>
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => navigation.navigate('Applications')}
+          >
             <View style={[styles.quickActionIcon, { backgroundColor: '#FFB800' }]}>
               <FileText size={16} color="white" />
             </View>
             <Text style={styles.quickActionLabel}>Applications</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity style={styles.quickActionCard}>
+          <TouchableOpacity 
+            style={styles.quickActionCard}
+            onPress={() => navigation.navigate('Profile')}
+          >
             <View style={[styles.quickActionIcon, { backgroundColor: '#0C5441' }]}>
               <User size={16} color="white" />
             </View>
@@ -208,9 +233,11 @@ function HomeTabScreen() {
               accessibilityLabel={`View ${item.name} profile`}
               accessibilityRole="button"
             >
-              <View style={styles.schoolCarouselImagePlaceholder}>
-                <Text style={styles.placeholderText}>School Image</Text>
-              </View>
+              <Image
+                source={require('../../assets/images/logomark.png')}
+                style={styles.schoolCarouselImage}
+                resizeMode="cover"
+              />
               <View style={styles.schoolCarouselInfo}>
                 <Text style={styles.schoolCarouselName}>{item.name}</Text>
                 <View style={styles.locationRow}>
@@ -231,6 +258,9 @@ function HomeTabScreen() {
 
 /* Dummy Screen for non-implemented tabs */
 function DummyScreen() {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
+  
   return (
     <View style={styles.center}>
       <Text>Coming Soon...</Text>
@@ -240,6 +270,9 @@ function DummyScreen() {
 
 // ---------------- Navigation ----------------
 export default function HomeScreen() {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
+  
   return (
     <Tab.Navigator
         screenOptions={({
@@ -270,19 +303,23 @@ export default function HomeScreen() {
       >
         <Tab.Screen name="Home" component={HomeTabScreen} />
         <Tab.Screen name="Explore" component={ExploreScreen} />
-        <Tab.Screen name="Matches" component={DummyScreen} />
-        <Tab.Screen name="Applications" component={DummyScreen} />
+        <Tab.Screen name="Matches" component={MatchesScreen} />
+        <Tab.Screen name="Applications" component={ApplicationsScreen} />
         <Tab.Screen name="Profile" component={ProfileScreen} />
       </Tab.Navigator>
   );
 }
 
 // ---------------- Styles ----------------
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: { 
     flex: 1, 
-    padding: 16, 
-    backgroundColor: "#F9FAFB" 
+    backgroundColor: colors.background
+  },
+  scrollContent: {
+    padding: 16,
+    paddingTop: 40, // Safe area padding
+    paddingBottom: 10, // Extra bottom padding for tab bar
   },
   header: {
     flexDirection: "row",
@@ -296,13 +333,13 @@ const styles = StyleSheet.create({
   greeting: { 
     fontSize: 24, 
     fontWeight: "700", 
-    color: "#111827",
+    color: colors.text,
     fontFamily: "Poppins",
     lineHeight: 32,
   },
   subtitle: { 
     fontSize: 16, 
-    color: "#6B7280",
+    color: colors.textSecondary,
     fontFamily: "Inter",
     fontWeight: "400",
     lineHeight: 25.6,
@@ -316,12 +353,14 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   confidenceCard: {
-    backgroundColor: "white",
     borderRadius: 16,
-    padding: 24,
     marginBottom: 24,
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
+    overflow: 'hidden',
+  },
+  confidenceGradient: {
+    padding: 24,
   },
   confidenceHeader: {
     flexDirection: "row",
@@ -331,8 +370,8 @@ const styles = StyleSheet.create({
   confidenceTitle: {
     fontSize: 16,
     fontFamily: "Arimo",
-    fontWeight: "400",
-    color: "#111827",
+    fontWeight: "600",
+    color: "#ffffff",
     marginLeft: 8,
   },
   confidenceContent: {
@@ -346,31 +385,31 @@ const styles = StyleSheet.create({
   progressLabel: {
     fontSize: 14,
     fontFamily: "Arimo",
-    fontWeight: "400",
-    color: "#111827",
+    fontWeight: "500",
+    color: "#ffffff",
   },
   progressPercent: {
     fontSize: 14,
     fontFamily: "Arimo",
-    fontWeight: "400",
-    color: "#111827",
+    fontWeight: "600",
+    color: "#ffffff",
   },
   progressBarBackground: {
     width: "100%",
     height: 8,
-    backgroundColor: "rgba(42, 113, 208, 0.20)",
+    backgroundColor: "rgba(255, 255, 255, 0.30)",
     borderRadius: 42152500,
   },
   progressBarFill: {
     height: 8,
-    backgroundColor: "#2A71D0",
+    backgroundColor: "#ffffff",
     borderRadius: 42152500,
   },
   progressSubtext: {
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: "rgba(255, 255, 255, 0.80)",
     lineHeight: 20,
   },
   quickActionsSection: {
@@ -392,13 +431,13 @@ const styles = StyleSheet.create({
   },
   quickActionCard: {
     width: "48%",
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   quickActionIcon: {
     width: 32,
@@ -419,14 +458,14 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   schoolCard: {
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   schoolImage: {
     width: 64,
@@ -454,7 +493,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
     marginLeft: 4,
   },
@@ -462,17 +501,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   center: { 
     flex: 1, 
     justifyContent: "center", 
-    alignItems: "center" 
+    alignItems: "center",
+    backgroundColor: colors.background
   },
   carouselContainer: {
-    paddingLeft: 16,
-    paddingRight: 16,
+    paddingLeft: 0,
+    paddingRight: 0,
   },
   schoolCarouselCard: {
     backgroundColor: "white",
@@ -484,12 +524,7 @@ const styles = StyleSheet.create({
     borderColor: "#E5E7EB",
     overflow: "hidden",
   },
-  schoolCarouselImage: {
-    width: "100%",
-    height: 120,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
+
   schoolCarouselInfo: {
     flex: 1,
     padding: 16,
@@ -518,20 +553,17 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     marginTop: 4,
   },
-  schoolCarouselImagePlaceholder: {
+  schoolCarouselImage: {
     width: "100%",
     height: 120,
-    backgroundColor: "#FF0000",
     borderTopLeftRadius: 14,
     borderTopRightRadius: 14,
     marginBottom: 0,
-    justifyContent: "center",
-    alignItems: "center",
   },
   placeholderText: {
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#9CA3AF",
+    color: colors.textMuted,
   },
 });

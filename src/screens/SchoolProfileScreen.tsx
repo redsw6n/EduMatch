@@ -1,3 +1,5 @@
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   ChevronDown,
   ChevronUp,
@@ -6,19 +8,25 @@ import {
 } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-  Alert,
   Dimensions,
   FlatList,
+  Image,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
+import type { RootStackParamList } from '../navigation/AppNavigator';
 import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
+
+type SchoolProfileScreenNavigationProp = NativeStackNavigationProp<
+  RootStackParamList,
+  'SchoolProfile'
+>;
 
 const { width: screenWidth } = Dimensions.get('window');
 
@@ -57,7 +65,6 @@ interface SchoolProfileScreenProps {
       schoolData?: SchoolProfileData;
     };
   };
-  navigation?: any;
 }
 
 // Mock data - this would come from props or API
@@ -124,8 +131,8 @@ const mockSchoolData: SchoolProfileData = {
 
 export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
   route,
-  navigation,
 }) => {
+  const navigation = useNavigation<SchoolProfileScreenNavigationProp>();
   const schoolData = route?.params?.schoolData || mockSchoolData;
   const insets = useSafeAreaInsets();
   const [programCategories, setProgramCategories] = useState<ProgramCategory[]>(
@@ -143,11 +150,25 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
   };
 
   const handleChat = () => {
-    Alert.alert('Chat', 'Opening chat with university admissions...');
+    try {
+      navigation.navigate('Messages', { 
+        schoolData: {
+          id: schoolData.id,
+          name: schoolData.name,
+          location: schoolData.location,
+        }
+      });
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   const handleApply = () => {
-    navigation?.navigate('Apply', { schoolData: schoolData });
+    try {
+      navigation.navigate('Apply', { schoolData: schoolData });
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   const renderProgramItem = ({ item }: { item: Program }) => (
@@ -206,13 +227,17 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
       >
         {/* Banner and Logo Section */}
         <View style={styles.bannerSection}>
-          <View style={styles.bannerPlaceholder}>
-            <Text style={styles.placeholderText}>University Banner</Text>
-          </View>
+          <Image
+            source={require('../../assets/images/icon.png')}
+            style={styles.bannerImage}
+            resizeMode="cover"
+          />
           <View style={styles.logoContainer}>
-            <View style={styles.logoPlaceholder}>
-              <Text style={styles.logoPlaceholderText}>Logo</Text>
-            </View>
+            <Image
+              source={require('../../assets/images/icon.png')}
+              style={styles.logoImage}
+              resizeMode="cover"
+            />
           </View>
         </View>
 
@@ -303,11 +328,9 @@ const styles = StyleSheet.create({
     position: 'relative',
     marginBottom: 40,
   },
-  bannerPlaceholder: {
+  bannerImage: {
     height: 200,
-    backgroundColor: '#FF0000',
-    justifyContent: 'center',
-    alignItems: 'center',
+    width: '100%',
   },
   placeholderText: {
     fontSize: typography.sizes.lg,
@@ -321,13 +344,10 @@ const styles = StyleSheet.create({
     right: 20,
     alignItems: 'center',
   },
-  logoPlaceholder: {
+  logoImage: {
     width: 80,
     height: 80,
-    backgroundColor: '#FF0000',
     borderRadius: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
     borderWidth: 3,
     borderColor: colors.border,
     shadowColor: colors.black,
@@ -338,11 +358,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
-  },
-  logoPlaceholderText: {
-    fontSize: typography.sizes.sm,
-    color: colors.textSecondary,
-    fontWeight: typography.weights.medium,
   },
   infoSection: {
     padding: 20,

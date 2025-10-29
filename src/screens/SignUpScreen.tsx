@@ -1,14 +1,15 @@
 import { Eye, EyeOff } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Alert,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
@@ -25,6 +26,7 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<{
     firstName?: string;
     lastName?: string;
@@ -131,8 +133,13 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       return;
     }
 
+    if (!acceptedTerms) {
+      Alert.alert('Terms Required', 'Please accept the Privacy Policy to continue.');
+      return;
+    }
+
     try {
-      await signUp(email.trim(), password);
+      await signUp(firstName.trim(), lastName.trim(), email.trim(), password);
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
@@ -155,8 +162,14 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
         <View
           style={styles.content}
         >
-          {/* Red curved header */}
-          <View style={styles.redHeader} />
+          {/* Header with icon */}
+          <View style={styles.headerContainer}>
+            <Image 
+              source={require('../../assets/images/icon.png')}
+              style={styles.headerIcon}
+              resizeMode="contain"
+            />
+          </View>
           
           {/* Sign Up Title */}
           <Text style={styles.title}>Sign Up</Text>
@@ -240,9 +253,9 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
                 onPress={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff size={20} color="#666666" />
+                  <EyeOff size={20} color="#000000" />
                 ) : (
-                  <Eye size={20} color="#666666" />
+                  <Eye size={20} color="#000000" />
                 )}
               </TouchableOpacity>
               {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
@@ -271,12 +284,31 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
                 onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff size={20} color="#666666" />
+                  <EyeOff size={20} color="#000000" />
                 ) : (
-                  <Eye size={20} color="#666666" />
+                  <Eye size={20} color="#000000" />
                 )}
               </TouchableOpacity>
               {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
+            </View>
+            
+            {/* Privacy Policy Agreement */}
+            <View style={styles.privacyContainer}>
+              <TouchableOpacity 
+                style={styles.checkboxContainer}
+                onPress={() => navigation.navigate('PrivacyPolicy', { 
+                  onAgree: () => setAcceptedTerms(true) 
+                })}
+                accessibilityLabel="Open privacy policy"
+                accessibilityRole="button"
+              >
+                <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}>
+                  {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
+                </View>
+              </TouchableOpacity>
+              <Text style={styles.privacyText}>
+                I agree with privacy and policy.
+              </Text>
             </View>
             
             {/* Sign Up Button */}
@@ -314,16 +346,24 @@ const styles = StyleSheet.create({
     flex: 1,
     position: 'relative',
   },
-  // Red curved header - larger placeholder for image
-  redHeader: {
+  // Header with icon background
+  headerContainer: {
     position: 'absolute',
     width: 390,
     height: 220,
     left: 0,
     top: 0,
-    backgroundColor: '#FF0000',
+    backgroundColor: '#F9FAFB',
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  headerIcon: {
+    width: 120,
+    height: 120,
   },
   // Sign Up title positioned with more space below red header
   title: {
@@ -419,7 +459,7 @@ const styles = StyleSheet.create({
     left: 12,
     top: 16,
     fontSize: 14,
-    color: '#666666',
+    color: '#000000',
     backgroundColor: 'transparent',
     paddingHorizontal: 4,
     zIndex: 1,
@@ -428,7 +468,7 @@ const styles = StyleSheet.create({
   floatingLabelActive: {
     top: -8,
     fontSize: 12,
-    color: '#666666',
+    color: '#000000',
     backgroundColor: '#FFFFFF',
     borderRadius: 5,
   },
@@ -448,7 +488,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 340,
     left: 25,
-    top: 620,
+    top: 645,
     padding: 16,
     backgroundColor: '#2A71D0',
     borderRadius: 12,
@@ -484,6 +524,44 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     color: '#2A71D0',
     fontSize: 14,
+    fontFamily: 'Inter',
+    fontWeight: '400',
+  },
+  // Privacy Policy Agreement
+  privacyContainer: {
+    position: 'absolute',
+    left: 25,
+    top: 605,
+    width: 340,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  checkboxContainer: {
+    marginRight: 12,
+  },
+  checkbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 2,
+    borderColor: '#D9D9D9',
+    borderRadius: 4,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  checkboxChecked: {
+    backgroundColor: '#2A71D0',
+    borderColor: '#2A71D0',
+  },
+  checkmark: {
+    color: 'white',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  privacyText: {
+    fontSize: 14,
+    color: '#000000',
     fontFamily: 'Inter',
     fontWeight: '400',
   },

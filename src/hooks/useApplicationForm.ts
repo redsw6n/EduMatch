@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import { useApplications } from '../context/ApplicationsContext';
 import { DocumentUpload, FormData } from '../types/applicationTypes';
 import { formatDate, validateCurrentStep } from '../utils/applicationUtils';
 
@@ -9,6 +10,7 @@ interface UseApplicationFormProps {
 }
 
 export const useApplicationForm = ({ schoolData, navigation }: UseApplicationFormProps) => {
+  const { addApplication } = useApplications();
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -119,6 +121,16 @@ export const useApplicationForm = ({ schoolData, navigation }: UseApplicationFor
     // Simulate submission process
     setTimeout(() => {
       setIsLoading(false);
+      
+      // Save application to context
+      addApplication({
+        universityName: schoolData?.name || 'Selected School',
+        program: formData.programChoice.firstChoice || 'Selected Program',
+        logo: 'https://placehold.co/64x64',
+        deadline: '2/15/2024', // This could be dynamic based on the school
+        campus: formData.programChoice.preferredCampus || 'Main Campus',
+        startTerm: 'A.Y 2024-2025',
+      });
       
       const applicationData = {
         personalInfo: formData.personalInfo,

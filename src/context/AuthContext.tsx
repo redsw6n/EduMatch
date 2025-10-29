@@ -2,6 +2,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { createContext, useContext, useState } from 'react';
 
 interface User {
+  firstName: string;
+  lastName: string;
   email: string;
 }
 
@@ -10,7 +12,8 @@ interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (firstName: string, lastName: string, email: string, password: string) => Promise<void>;
+  updateProfile: (firstName: string, lastName: string, email: string) => Promise<void>;
   signOut: () => Promise<void>;
   hydrateFromStorage: () => Promise<{ hasOnboarded: boolean; authToken: string | null }>;
 }
@@ -19,6 +22,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const AUTH_TOKEN_KEY = '@auth_token';
 const HAS_ONBOARDED_KEY = '@has_onboarded';
+const USER_PROFILE_KEY = '@user_profile';
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [authToken, setAuthToken] = useState<string | null>(null);
@@ -37,9 +41,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Save token to AsyncStorage
       await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
       
+      // Load existing user profile or create default
+      const storedProfile = await AsyncStorage.getItem(USER_PROFILE_KEY);
+      let userProfile: User;
+      
+      if (storedProfile) {
+        userProfile = JSON.parse(storedProfile);
+      } else {
+        // Default profile for existing users
+        userProfile = {
+          firstName: '',
+          lastName: '',
+          email: email,
+        };
+        await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(userProfile));
+      }
+      
       // Update state
       setAuthToken(token);
-      setUser({ email });
+      setUser(userProfile);
     } catch (error) {
       console.error('Sign in error:', error);
       throw error;
@@ -48,7 +68,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const signUp = async (email: string, password: string): Promise<void> => {
+  const signUp = async (firstName: string, lastName: string, email: string, password: string): Promise<void> => {
     setIsLoading(true);
     try {
       // Simulate API call delay
@@ -57,12 +77,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // Generate fake token
       const token = `token_${Date.now()}`;
       
-      // Save token to AsyncStorage
-      await AsyncStorage.setItem(AUTH_TOKEN_KEY, token);
+      // Create user profile
+      const userProfile: User = {
+        firstName,
+        lastName,
+        email,
+      };
+      
+      // Save token and profile to AsyncStorage
+      await Promise.all([
+        AsyncStorage.setItem(AUTH_TOKEN_KEY, token),
+        AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(userProfile)),
+      ]);
       
       // Update state
       setAuthToken(token);
-      setUser({ email });
+      setUser(userProfile);
     } catch (error) {
       console.error('Sign up error:', error);
       throw error;
@@ -90,9 +120,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // TEMPORARY: Clear storage for testing - remove this later
       // await AsyncStorage.clear();
       
-      const [hasOnboardedValue, tokenValue] = await Promise.all([
+      const [hasOnboardedValue, tokenValue, profileValue] = await Promise.all([
         AsyncStorage.getItem(HAS_ONBOARDED_KEY),
         AsyncStorage.getItem(AUTH_TOKEN_KEY),
+        AsyncStorage.getItem(USER_PROFILE_KEY),
       ]);
 
       const hasOnboarded = hasOnboardedValue === 'true';
@@ -100,15 +131,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       // If we have a token, set it in state
       if (tokenValue) {
         setAuthToken(tokenValue);
-        // Note: In a real app, you'd validate the token and get user info
-        // For now, we'll set a placeholder user
-        setUser({ email: 'user@example.com' });
+        
+        // Load user profile if available
+        if (profileValue) {
+          const userProfile = JSON.parse(profileValue);
+          setUser(userProfile);
+        } else {
+          // Create default profile for existing users
+          const defaultProfile: User = {
+            firstName: '',
+            lastName: '',
+            email: 'user@example.com',
+          };
+          setUser(defaultProfile);
+        }
       }
 
       return { hasOnboarded, authToken: tokenValue };
     } catch (error) {
       console.error('Hydrate from storage error:', error);
       return { hasOnboarded: false, authToken: null };
+    }
+  };
+
+  const updateProfile = async (firstName: string, lastName: string, email: string): Promise<void> => {
+    try {
+      const updatedProfile: User = {
+        firstName,
+        lastName,
+        email,
+      };
+      
+      // Save updated profile to AsyncStorage
+      await AsyncStorage.setItem(USER_PROFILE_KEY, JSON.stringify(updatedProfile));
+      
+      // Update state
+      setUser(updatedProfile);
+    } catch (error) {
+      console.error('Update profile error:', error);
+      throw error;
     }
   };
 
@@ -127,6 +188,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     isLoading,
     signIn,
     signUp,
+    updateProfile,
     signOut,
     hydrateFromStorage,
   };

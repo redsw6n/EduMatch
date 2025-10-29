@@ -10,6 +10,7 @@ import {
 import React, { useState } from "react";
 import {
   Alert,
+  Image,
   Linking,
   Platform,
   ScrollView,
@@ -231,13 +232,13 @@ export default function ExploreScreen() {
           style={styles.actionButton}
           onPress={() => setShowFilters(!showFilters)}
         >
-          <Filter size={20} color="#6B7280" />
+          <Filter size={20} color="#ffffff" />
         </TouchableOpacity>
         <TouchableOpacity 
           style={styles.actionButton}
           onPress={openGoogleMaps}
         >
-          <MapPin size={20} color="#6B7280" />
+          <MapPin size={20} color="#ffffff" />
         </TouchableOpacity>
       </View>
 
@@ -325,8 +326,14 @@ export default function ExploreScreen() {
                 accessibilityLabel={`View ${university.name} profile`}
                 accessibilityRole="button"
               >
-                {/* Logo placeholder */}
-                <View style={styles.logoPlaceholder} />
+                {/* University Logo */}
+                <View style={styles.logoContainer}>
+                  <Image 
+                    source={require('../../assets/images/logomark.png')}
+                    style={styles.universityLogo}
+                    resizeMode="contain"
+                  />
+                </View>
                 
                 {/* Content */}
                 <View style={styles.universityContent}>
@@ -393,7 +400,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginRight: 12,
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: "#2A71D0",
   },
   searchIcon: {
     marginRight: 8,
@@ -409,13 +416,13 @@ const styles = StyleSheet.create({
   actionButton: {
     width: 48,
     height: 48,
-    backgroundColor: "white",
+    backgroundColor: "#2A71D0",
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: "#2A71D0",
   },
   filterContainer: {
     backgroundColor: "#fff",
@@ -503,14 +510,22 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     alignItems: "center",
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: "#2A71D0",
   },
-  logoPlaceholder: {
+  logoContainer: {
     width: 60,
     height: 60,
-    backgroundColor: "#FF0000",
+    backgroundColor: "#F3F4F6",
     borderRadius: 30,
     marginRight: 12,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  universityLogo: {
+    width: 40,
+    height: 40,
   },
   universityContent: {
     flex: 1,
