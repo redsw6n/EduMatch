@@ -10,6 +10,7 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface PrivacyPolicyScreenProps {
   navigation: any;
@@ -24,6 +25,8 @@ export const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({
   navigation, 
   route 
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const insets = useSafeAreaInsets();
   const { onAgree } = route?.params || {};
   const scrollViewRef = useRef<ScrollView>(null);
@@ -100,7 +103,7 @@ export const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({
         accessibilityLabel="Go back"
         accessibilityRole="button"
       >
-        <ChevronLeft size={24} color="white" />
+        <ChevronLeft size={24} color={colors.textInverse} />
       </TouchableOpacity>
 
       {/* Title */}
@@ -187,10 +190,10 @@ export const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   darkBackground: {
     position: 'absolute',
@@ -198,7 +201,7 @@ const styles = StyleSheet.create({
     height: 844,
     left: 0,
     top: 0,
-    backgroundColor: '#1B1B1B',
+    backgroundColor: colors.backgroundSecondary,
   },
   backButton: {
     position: 'absolute',
@@ -217,7 +220,7 @@ const styles = StyleSheet.create({
     left: 43,
     top: 108,
     textAlign: 'center',
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 40,
     fontFamily: 'Inter',
     fontWeight: '700',
@@ -231,7 +234,7 @@ const styles = StyleSheet.create({
     top: 180,
     width: 340,
     height: 556,
-    backgroundColor: '#F3F2F2',
+    backgroundColor: colors.surface,
     borderRadius: 8,
   },
   scrollbarTrack: {
@@ -240,13 +243,13 @@ const styles = StyleSheet.create({
     top: 12,
     width: 6,
     height: 532,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: colors.border,
     borderRadius: 4,
   },
   scrollbarThumb: {
     width: 6,
     height: 112.38,
-    backgroundColor: '#4C4C4C',
+    backgroundColor: colors.textSecondary,
     borderRadius: 4,
   },
   scrollContent: {
@@ -262,14 +265,14 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Inter',
     fontWeight: '700',
-    color: 'black',
+    color: colors.text,
     marginBottom: 10,
   },
   sectionContent: {
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
     lineHeight: 20,
   },
   agreeButton: {
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
   },
   agreeButtonText: {
     textAlign: 'center',
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '600',

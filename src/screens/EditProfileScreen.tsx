@@ -1,24 +1,27 @@
 import { ArrowLeft, User } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface EditProfileScreenProps {
   navigation: any;
 }
 
 export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const { user, updateProfile, isLoading } = useAuth();
   
   const [firstName, setFirstName] = useState(user?.firstName || '');
@@ -131,7 +134,7 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ArrowLeft size={24} color="#000" />
+            <ArrowLeft size={24} color={colors.text} />
           </TouchableOpacity>
 
           {/* Logo */}
@@ -153,7 +156,7 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
               firstNameFocused && styles.textInputContainerFocused,
               errors.firstName && styles.textInputContainerError
             ]}>
-              <User size={20} color="#666" style={styles.inputIcon} />
+              <User size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <View style={styles.inputContent}>
                 <Text style={[
                   styles.floatingLabel,
@@ -191,7 +194,7 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
               lastNameFocused && styles.textInputContainerFocused,
               errors.lastName && styles.textInputContainerError
             ]}>
-              <User size={20} color="#666" style={styles.inputIcon} />
+              <User size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <View style={styles.inputContent}>
                 <Text style={[
                   styles.floatingLabel,
@@ -229,7 +232,7 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
               emailFocused && styles.textInputContainerFocused,
               errors.email && styles.textInputContainerError
             ]}>
-              <User size={20} color="#666" style={styles.inputIcon} />
+              <User size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <View style={styles.inputContent}>
                 <Text style={[
                   styles.floatingLabel,
@@ -279,10 +282,10 @@ export const EditProfileScreen: React.FC<EditProfileScreenProps> = ({ navigation
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -311,7 +314,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'Inter',
     fontWeight: '700',
-    color: 'black',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 54,
     width: 320.8,
@@ -323,7 +326,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D9D9D9',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     height: 52,
     paddingHorizontal: 16,
@@ -353,20 +356,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
     backgroundColor: 'transparent',
     zIndex: 1,
   },
   floatingLabelActive: {
     top: 2,
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
   },
   textInput: {
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
     paddingTop: 20,
     paddingBottom: 4,
     height: 52,
@@ -392,7 +395,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   updateButtonText: {
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '600',

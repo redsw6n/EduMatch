@@ -2,6 +2,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 import { useThemedColors } from '../hooks/useThemedColors';
+import AIChatbotScreen from '../screens/AIChatbotScreen';
 import ApplicationTimelineScreen from '../screens/ApplicationTimelineScreen';
 import ApplyScreen from '../screens/ApplyScreen';
 import CareerGuidanceScreen from '../screens/CareerGuidanceScreen';
@@ -57,6 +58,7 @@ export type RootStackParamList = {
   };
   CareerGuidance: undefined;
   Support: undefined;
+  AIChatbot: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -236,6 +238,15 @@ export const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="Messages"
           component={MessagesScreen}
+          options={{
+            headerShown: false,
+            headerBackVisible: true,
+            gestureEnabled: true,
+          }}
+        />
+        <Stack.Screen
+          name="AIChatbot"
+          component={AIChatbotScreen}
           options={{
             headerShown: false,
             headerBackVisible: true,

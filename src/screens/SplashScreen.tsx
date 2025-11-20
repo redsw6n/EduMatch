@@ -2,13 +2,15 @@ import React, { useEffect, useRef } from 'react';
 import { Animated, Image, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { clearAppStorage, useAuth } from '../context/AuthContext';
-import { colors } from '../theme/colors';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface SplashScreenProps {
   navigation: any;
 }
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
+  const themedColors = useThemedColors();
+  const styles = createStyles(themedColors);
   const { hydrateFromStorage } = useAuth();
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const scaleAnim = useRef(new Animated.Value(0.8)).current;
@@ -80,7 +82,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,

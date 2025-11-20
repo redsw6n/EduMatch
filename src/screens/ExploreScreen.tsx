@@ -2,6 +2,7 @@ import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { CompositeNavigationProp, useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import {
+  Bot,
   Filter,
   Heart,
   MapPin,
@@ -21,6 +22,7 @@ import {
   View
 } from "react-native";
 import { useFavorites } from '../context/FavoritesContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 import { RootStackParamList } from "../navigation/AppNavigator";
 
 // ---------------- Types ----------------
@@ -54,6 +56,7 @@ type ExploreScreenNavigationProp = CompositeNavigationProp<
 export default function ExploreScreen() {
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
   const navigation = useNavigation<ExploreScreenNavigationProp>();
+  const colors = useThemedColors();
   
   const [showFilters, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -205,8 +208,15 @@ export default function ExploreScreen() {
       }
 
       return matchesSearch && matchesLocation && matchesTuition;
-    });
+      });
   };
+
+  const handleChatbotPress = () => {
+    // Navigate to AI chatbot screen
+    navigation.navigate('AIChatbot');
+  };
+
+  const styles = createStyles(colors);
 
   return (
     <View style={styles.container}>
@@ -219,11 +229,11 @@ export default function ExploreScreen() {
       {/* Search & Actions Row */}
       <View style={styles.searchRow}>
         <View style={styles.searchContainer}>
-          <Search size={20} color="#6B7280" style={styles.searchIcon} />
+          <Search size={20} color={colors.textSecondary} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search"
-            placeholderTextColor="#9CA3AF"
+            placeholderTextColor={colors.textMuted}
             value={searchQuery}
             onChangeText={setSearchQuery}
           />
@@ -253,6 +263,7 @@ export default function ExploreScreen() {
             <TextInput
               style={styles.filterInput}
               placeholder="Enter location"
+              placeholderTextColor={colors.textMuted}
               value={location}
               onChangeText={setLocation}
             />
@@ -265,6 +276,7 @@ export default function ExploreScreen() {
               <TextInput
                 style={[styles.filterInput, styles.tuitionInput]}
                 placeholder="Min"
+                placeholderTextColor={colors.textMuted}
                 value={minTuition}
                 onChangeText={setMinTuition}
                 keyboardType="numeric"
@@ -272,6 +284,7 @@ export default function ExploreScreen() {
               <TextInput
                 style={[styles.filterInput, styles.tuitionInput]}
                 placeholder="Max"
+                placeholderTextColor={colors.textMuted}
                 value={maxTuition}
                 onChangeText={setMaxTuition}
                 keyboardType="numeric"
@@ -360,15 +373,25 @@ export default function ExploreScreen() {
           )}
         </View>
       </ScrollView>
+      
+      {/* Floating AI Chatbot Button */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={handleChatbotPress}
+        accessibilityLabel="Open AI chatbot"
+        accessibilityRole="button"
+      >
+        <Bot size={24} color="#FFFFFF" />
+      </TouchableOpacity>
     </View>
   );
 }
 
 // ---------------- Styles ----------------
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
     paddingTop: 40, // Safe area padding
   },
   header: {
@@ -378,12 +401,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 16,
-    color: "#666",
+    color: colors.textSecondary,
   },
   searchRow: {
     flexDirection: "row",
@@ -395,12 +418,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     paddingHorizontal: 16,
     marginRight: 12,
     borderWidth: 1.26,
-    borderColor: "#2A71D0",
+    borderColor: colors.primary,
   },
   searchIcon: {
     marginRight: 8,
@@ -411,39 +434,33 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#111827",
+    color: colors.text,
   },
   actionButton: {
     width: 48,
     height: 48,
-    backgroundColor: "#2A71D0",
+    backgroundColor: colors.primary,
     borderRadius: 16,
     alignItems: "center",
     justifyContent: "center",
     marginLeft: 8,
     borderWidth: 1.26,
-    borderColor: "#2A71D0",
+    borderColor: colors.primary,
   },
   filterContainer: {
-    backgroundColor: "#fff",
+    backgroundColor: colors.surface,
     marginHorizontal: 16,
     borderRadius: 12,
     padding: 16,
     marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    borderWidth: 1.26,
+    borderColor: colors.border,
   },
   filterTitle: {
     fontSize: 18,
     fontWeight: "bold",
     marginBottom: 16,
-    color: "#333",
+    color: colors.text,
   },
   filterSection: {
     marginBottom: 16,
@@ -451,14 +468,17 @@ const styles = StyleSheet.create({
   filterLabel: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#333",
+    color: colors.text,
     marginBottom: 8,
   },
   filterInput: {
-    backgroundColor: "#f5f5f5",
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 8,
     padding: 12,
     fontSize: 16,
+    color: colors.text,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   tuitionRow: {
     flexDirection: "row",
@@ -473,7 +493,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#333",
+    color: colors.text,
     marginBottom: 12,
     paddingHorizontal: 16,
   },
@@ -482,46 +502,46 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   categoryChip: {
-    backgroundColor: "#f0f0f0",
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 20,
     paddingVertical: 8,
     paddingHorizontal: 16,
     marginRight: 8,
   },
   categoryChipActive: {
-    backgroundColor: "#007bff",
+    backgroundColor: colors.primary,
   },
   categoryText: {
     fontSize: 14,
-    color: "#666",
+    color: colors.textSecondary,
     fontWeight: "500",
   },
   categoryTextActive: {
-    color: "#fff",
+    color: colors.textInverse,
   },
   universitySection: {
     paddingHorizontal: 16,
   },
   universityCard: {
     flexDirection: "row",
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 16,
     marginBottom: 12,
     alignItems: "center",
     borderWidth: 1.26,
-    borderColor: "#2A71D0",
+    borderColor: colors.primary,
   },
   logoContainer: {
     width: 60,
     height: 60,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 30,
     marginRight: 12,
     alignItems: "center",
     justifyContent: "center",
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   universityLogo: {
     width: 40,
@@ -539,7 +559,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 24,
     marginBottom: 4,
   },
@@ -547,7 +567,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
     marginBottom: 4,
   },
@@ -555,7 +575,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
   },
 
@@ -570,12 +590,31 @@ const styles = StyleSheet.create({
   noResultsText: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#333",
+    color: colors.text,
     marginBottom: 8,
   },
   noResultsSubtext: {
     fontSize: 14,
-    color: "#666",
+    color: colors.textSecondary,
     textAlign: "center",
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    width: 56,
+    height: 56,
+    backgroundColor: colors.primary,
+    borderRadius: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 8,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
   },
 });

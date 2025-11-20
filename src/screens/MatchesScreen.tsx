@@ -1,4 +1,3 @@
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import {
   SafeAreaView,
@@ -8,12 +7,16 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface MatchesScreenProps {
   navigation: any;
 }
 
 const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
+
   const handleCompleteProfile = () => {
     // Navigate to profile completion or assessment
     navigation.navigate('Profile');
@@ -34,10 +37,7 @@ const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
 
         {/* Personalized Matches Card */}
         <View style={styles.cardContainer}>
-          <LinearGradient
-            colors={['#DBEAFE', '#D1FAE5']}
-            style={styles.gradientCard}
-          >
+          <View style={styles.gradientCard}>
             <View style={styles.cardContent}>
               <Text style={styles.cardTitle}>Want more personalized matches?</Text>
               <Text style={styles.cardDescription}>
@@ -62,7 +62,7 @@ const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
                 </TouchableOpacity>
               </View>
             </View>
-          </LinearGradient>
+          </View>
         </View>
 
         {/* Placeholder for future matches content */}
@@ -77,10 +77,10 @@ const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
     paddingTop: 40, // Safe area padding
   },
   scrollContent: {
@@ -93,13 +93,13 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 28,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     marginBottom: 4,
   },
   headerSubtitle: {
     fontSize: 16,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Inter',
   },
   cardContainer: {
@@ -108,7 +108,8 @@ const styles = StyleSheet.create({
   gradientCard: {
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
     overflow: 'hidden',
   },
   cardContent: {
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     textAlign: 'center',
     lineHeight: 24,
@@ -130,7 +131,7 @@ const styles = StyleSheet.create({
   cardDescription: {
     fontSize: 14,
     fontWeight: '400',
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Inter',
     textAlign: 'center',
     lineHeight: 20,
@@ -182,24 +183,24 @@ const styles = StyleSheet.create({
     letterSpacing: 0.35,
   },
   placeholderSection: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 24,
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   placeholderTitle: {
     fontSize: 18,
     fontWeight: '600',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     marginBottom: 8,
     textAlign: 'center',
   },
   placeholderText: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Inter',
     textAlign: 'center',
     lineHeight: 20,

@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { colors } from '../../theme/colors';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { DocumentUpload, FormData } from '../../types/applicationTypes';
 import { formatFileSize } from '../../utils/applicationUtils';
 import { handleDocumentUpload, showRemoveDocumentAlert } from '../../utils/documentUtils';
@@ -21,6 +21,8 @@ export const DocumentStep: React.FC<DocumentStepProps> = ({
   formData,
   updateDocument,
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const onDocumentUpload = async (documentType: keyof FormData['documents']) => {
     const result = await handleDocumentUpload();
     if (result) {
@@ -143,9 +145,9 @@ export const DocumentStep: React.FC<DocumentStepProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   documentFormContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -181,7 +183,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     position: 'relative',
   },
   uploadIcon: {
@@ -265,7 +267,7 @@ const styles = StyleSheet.create({
   replaceButtonText: {
     fontSize: 12,
     fontWeight: '500',
-    color: colors.white,
+    color: colors.textInverse,
     textTransform: 'uppercase',
     letterSpacing: 0.35,
   },

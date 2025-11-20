@@ -1,8 +1,6 @@
-import * as DocumentPicker from 'expo-document-picker';
-import { ChevronLeft, Paperclip, Send } from 'lucide-react-native';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Bot, ChevronLeft, Send } from 'lucide-react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import {
-    Alert,
     FlatList,
     KeyboardAvoidingView,
     Platform,
@@ -13,64 +11,34 @@ import {
     View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useConversations, type Message } from '../context/ConversationsContext';
 import { useThemedColors } from '../hooks/useThemedColors';
 
-interface MessagesScreenProps {
-  route?: {
-    params?: {
-      schoolData?: {
-        id: string;
-        name: string;
-        location: string;
-      };
-    };
-  };
+interface AIChatbotScreenProps {
   navigation?: any;
 }
 
-const MessagesScreen: React.FC<MessagesScreenProps> = ({ route, navigation }) => {
+interface ChatMessage {
+  id: string;
+  text: string;
+  isUser: boolean;
+  timestamp: Date;
+}
+
+const AIChatbotScreen: React.FC<AIChatbotScreenProps> = ({ navigation }) => {
   const colors = useThemedColors();
   const styles = createStyles(colors);
   const insets = useSafeAreaInsets();
   const flatListRef = useRef<FlatList>(null);
   
-  const { 
-    getConversation, 
-    addMessage, 
-    markAsRead, 
-    createOrUpdateConversation 
-  } = useConversations();
-  
-  const schoolData = route?.params?.schoolData;
-  const schoolName = schoolData?.name || 'University Admissions';
-  
   const [message, setMessage] = useState('');
-  const [conversationId, setConversationId] = useState<string | null>(null);
-  
-  // Get conversation data
-  const conversation = schoolData ? getConversation(schoolData.id) : null;
-  const messages = conversation?.messages || [];
-
-  // Create or get existing conversation on mount
-  useEffect(() => {
-    if (schoolData) {
-      const id = createOrUpdateConversation(schoolData);
-      setConversationId(id);
-    }
-  }, [schoolData?.id, schoolData?.name, schoolData?.location, createOrUpdateConversation]);
-
-  // Memoized markAsRead to prevent infinite re-renders
-  const memoizedMarkAsRead = useCallback((id: string) => {
-    markAsRead(id);
-  }, [markAsRead]);
-
-  // Mark conversation as read when screen is focused
-  useEffect(() => {
-    if (conversationId) {
-      memoizedMarkAsRead(conversationId);
-    }
-  }, [conversationId, memoizedMarkAsRead]);
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: '1',
+      text: 'Hello! I\'m your AI assistant for EduMatch. I can help you find universities, answer questions about programs, and guide you through the application process. How can I help you today?',
+      isUser: false,
+      timestamp: new Date(),
+    },
+  ]);
 
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
@@ -82,114 +50,92 @@ const MessagesScreen: React.FC<MessagesScreenProps> = ({ route, navigation }) =>
   }, [messages]);
 
   const sendMessage = () => {
-    if (message.trim().length === 0 || !schoolData) return;
+    if (message.trim().length === 0) return;
 
     // Add user message
-    addMessage(schoolData.id, {
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
       text: message.trim(),
       isUser: true,
       timestamp: new Date(),
-      type: 'text',
-    });
+    };
 
+    setMessages(prev => [...prev, userMessage]);
     setMessage('');
 
-    // Simulate school response after a delay
+    // Simulate AI response after a delay
     setTimeout(() => {
-      const responses = [
-        "Thank you for your message! I'll get back to you with more information shortly.",
-        "That's a great question! Let me connect you with the right department for detailed information.",
-        "I'd be happy to help you with that. Would you like to schedule a call with our admissions counselor?",
-        "Thanks for reaching out! For specific program details, I recommend checking our website or scheduling a campus visit.",
-        "I appreciate your interest in our university. Is there anything specific about our programs you'd like to know more about?",
-      ];
-      
-      const randomResponse = responses[Math.floor(Math.random() * responses.length)];
-      
-      addMessage(schoolData.id, {
-        text: randomResponse,
+      const aiResponse = generateAIResponse(message.trim());
+      const aiMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        text: aiResponse,
         isUser: false,
         timestamp: new Date(),
-        type: 'text',
-      });
+      };
+      
+      setMessages(prev => [...prev, aiMessage]);
     }, 1500);
   };
 
-  const handleFileUpload = async () => {
-    if (!schoolData) return;
-
-    try {
-      const result = await DocumentPicker.getDocumentAsync({
-        type: '*/*',
-        copyToCacheDirectory: true,
-      });
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        const file = result.assets[0];
-        
-        // Add file message
-        addMessage(schoolData.id, {
-          text: `Document: ${file.name}`,
-          isUser: true,
-          timestamp: new Date(),
-          type: 'file',
-          fileName: file.name,
-          fileUri: file.uri,
-        });
-
-        // Simulate school response
-        setTimeout(() => {
-          addMessage(schoolData.id, {
-            text: `Thank you for sharing "${file.name}"! I'll review it and get back to you soon.`,
-            isUser: false,
-            timestamp: new Date(),
-            type: 'text',
-          });
-        }, 1000);
-      }
-    } catch (error) {
-      console.error('Error picking document:', error);
-      Alert.alert('Error', 'Failed to upload document. Please try again.');
+  const generateAIResponse = (userMessage: string): string => {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // Simple keyword-based responses
+    if (lowerMessage.includes('university') || lowerMessage.includes('college') || lowerMessage.includes('school')) {
+      return 'I can help you find universities that match your preferences! You can explore universities based on your location, budget, and program interests. Would you like me to suggest some universities based on your profile?';
     }
+    
+    if (lowerMessage.includes('program') || lowerMessage.includes('course') || lowerMessage.includes('major')) {
+      return 'Great question about programs! Universities offer various programs like Engineering, Business, Arts, Health Sciences, and more. What field of study are you most interested in?';
+    }
+    
+    if (lowerMessage.includes('application') || lowerMessage.includes('apply')) {
+      return 'I can guide you through the application process! Most universities require transcripts, recommendation letters, and personal statements. You can track your applications right here in EduMatch. Do you need help with a specific part of the application?';
+    }
+    
+    if (lowerMessage.includes('tuition') || lowerMessage.includes('cost') || lowerMessage.includes('fee')) {
+      return 'Tuition costs vary by university and program. I can help you filter universities by your budget range. What\'s your preferred tuition range? You can also explore scholarship opportunities!';
+    }
+    
+    if (lowerMessage.includes('scholarship') || lowerMessage.includes('financial aid')) {
+      return 'Scholarships are a great way to fund your education! Many universities offer merit-based and need-based scholarships. I recommend checking each university\'s financial aid page for specific opportunities.';
+    }
+    
+    if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
+      return 'Hello! I\'m here to help you with your university search and application journey. Feel free to ask me anything about universities, programs, applications, or the EduMatch app!';
+    }
+    
+    if (lowerMessage.includes('thank')) {
+      return 'You\'re very welcome! I\'m always here to help with your educational journey. Is there anything else you\'d like to know about universities or applications?';
+    }
+    
+    // Default response
+    return 'That\'s an interesting question! While I\'m still learning, I can help you with university searches, program information, and application guidance. You can also explore the universities in the Explore tab or check your application status in the Applications section. Is there something specific about universities or applications I can help with?';
   };
 
   const formatTime = (date: Date) => {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const renderMessage = ({ item }: { item: Message }) => (
+  const renderMessage = ({ item }: { item: ChatMessage }) => (
     <View style={[
       styles.messageContainer,
-      item.isUser ? styles.userMessageContainer : styles.schoolMessageContainer
+      item.isUser ? styles.userMessageContainer : styles.aiMessageContainer
     ]}>
       <View style={[
         styles.messageBubble,
-        item.isUser ? styles.userMessageBubble : styles.schoolMessageBubble,
-        item.type === 'file' && styles.fileBubble
+        item.isUser ? styles.userMessageBubble : styles.aiMessageBubble
       ]}>
-        {item.type === 'file' ? (
-          <View style={styles.fileContainer}>
-            <Paperclip size={16} color={item.isUser ? '#FFFFFF' : colors.text} />
-            <Text style={[
-              styles.messageText,
-              item.isUser ? styles.userMessageText : styles.schoolMessageText,
-              styles.fileName
-            ]}>
-              {item.fileName || 'Document'}
-            </Text>
-          </View>
-        ) : (
-          <Text style={[
-            styles.messageText,
-            item.isUser ? styles.userMessageText : styles.schoolMessageText
-          ]}>
-            {item.text}
-          </Text>
-        )}
+        <Text style={[
+          styles.messageText,
+          item.isUser ? styles.userMessageText : styles.aiMessageText
+        ]}>
+          {item.text}
+        </Text>
       </View>
       <Text style={[
         styles.messageTime,
-        item.isUser ? styles.userMessageTime : styles.schoolMessageTime
+        item.isUser ? styles.userMessageTime : styles.aiMessageTime
       ]}>
         {formatTime(item.timestamp)}
       </Text>
@@ -210,16 +156,12 @@ const MessagesScreen: React.FC<MessagesScreenProps> = ({ route, navigation }) =>
         </TouchableOpacity>
         
         <View style={styles.headerInfo}>
-          <Text style={styles.headerTitle}>{schoolName}</Text>
-          <Text style={styles.headerSubtitle}>
-            {schoolData?.location || 'Admissions Office'}
-          </Text>
+          <Text style={styles.headerTitle}>AI Assistant</Text>
+          <Text style={styles.headerSubtitle}>EduMatch Chatbot</Text>
         </View>
         
         <View style={styles.headerAvatar}>
-          <Text style={styles.headerAvatarText}>
-            {schoolName.charAt(0).toUpperCase()}
-          </Text>
+          <Bot size={20} color="#FFFFFF" />
         </View>
       </View>
 
@@ -242,19 +184,11 @@ const MessagesScreen: React.FC<MessagesScreenProps> = ({ route, navigation }) =>
       >
         <View style={[styles.inputContainer, { paddingBottom: insets.bottom + 16 }]}>
           <View style={styles.inputWrapper}>
-            <TouchableOpacity
-              style={styles.fileUploadButton}
-              onPress={handleFileUpload}
-              accessibilityRole="button"
-              accessibilityLabel="Upload file"
-            >
-              <Paperclip size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
             <TextInput
               style={styles.textInput}
               value={message}
               onChangeText={setMessage}
-              placeholder="Type a message..."
+              placeholder="Ask me anything about universities..."
               placeholderTextColor={colors.textSecondary}
               multiline
               maxLength={500}
@@ -326,15 +260,9 @@ const createStyles = (colors: any) => StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#2A71D0',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  headerAvatarText: {
-    fontSize: 16,
-    fontFamily: 'Arimo',
-    fontWeight: '700',
-    color: '#FFFFFF',
   },
   messagesList: {
     flex: 1,
@@ -349,21 +277,21 @@ const createStyles = (colors: any) => StyleSheet.create({
   userMessageContainer: {
     alignItems: 'flex-end',
   },
-  schoolMessageContainer: {
+  aiMessageContainer: {
     alignItems: 'flex-start',
   },
   messageBubble: {
-    maxWidth: '75%',
+    maxWidth: '80%',
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 20,
     marginBottom: 4,
   },
   userMessageBubble: {
-    backgroundColor: '#2A71D0',
+    backgroundColor: colors.primary,
     borderBottomRightRadius: 4,
   },
-  schoolMessageBubble: {
+  aiMessageBubble: {
     backgroundColor: colors.backgroundSecondary,
     borderBottomLeftRadius: 4,
     borderWidth: 1,
@@ -378,7 +306,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   userMessageText: {
     color: '#FFFFFF',
   },
-  schoolMessageText: {
+  aiMessageText: {
     color: colors.text,
   },
   messageTime: {
@@ -392,7 +320,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     textAlign: 'right',
     marginRight: 4,
   },
-  schoolMessageTime: {
+  aiMessageTime: {
     color: colors.textSecondary,
     textAlign: 'left',
     marginLeft: 4,
@@ -415,16 +343,6 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingVertical: 8,
     minHeight: 48,
   },
-  fileUploadButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: colors.backgroundSecondary,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 8,
-    marginBottom: 2,
-  },
   textInput: {
     flex: 1,
     fontSize: 16,
@@ -440,7 +358,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: '#2A71D0',
+    backgroundColor: colors.primary,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 2,
@@ -448,19 +366,6 @@ const createStyles = (colors: any) => StyleSheet.create({
   sendButtonDisabled: {
     backgroundColor: colors.backgroundSecondary,
   },
-  fileBubble: {
-    backgroundColor: colors.backgroundSecondary,
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  fileContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fileName: {
-    marginLeft: 8,
-    fontWeight: '500',
-  },
 });
 
-export default MessagesScreen;
+export default AIChatbotScreen;

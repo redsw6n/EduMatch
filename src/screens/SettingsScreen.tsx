@@ -2,13 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import {
   AlertTriangle,
   Bell,
+  ChevronLeft,
   ChevronRight,
   HelpCircle,
   Lock,
   LogOut,
   Moon,
   Palette,
-  Settings,
   User
 } from "lucide-react-native";
 import React, { useState } from "react";
@@ -180,10 +180,16 @@ export default function SettingsScreen() {
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Header */}
         <View style={styles.header}>
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => navigation.goBack()}
+            accessibilityRole="button"
+            accessibilityLabel="Go back"
+          >
+            <ChevronLeft size={24} color={colors.text} />
+          </TouchableOpacity>
           <Text style={styles.headerTitle}>Settings</Text>
-          <View style={styles.headerIcon}>
-            <Settings size={24} color="#2A71D0" />
-          </View>
+          <View style={styles.headerSpacer} />
         </View>
 
         {/* Account Section */}
@@ -291,6 +297,14 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingTop: 60,
     paddingBottom: 24,
   },
+  backButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: colors.backgroundSecondary,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   headerTitle: {
     fontSize: 24,
     fontFamily: "Poppins",
@@ -298,13 +312,8 @@ const createStyles = (colors: any) => StyleSheet.create({
     color: colors.text,
     lineHeight: 32,
   },
-  headerIcon: {
+  headerSpacer: {
     width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.backgroundSecondary,
-    justifyContent: "center",
-    alignItems: "center",
   },
 
   section: {

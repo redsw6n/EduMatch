@@ -1,29 +1,29 @@
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-  AlertTriangle,
-  Bell,
-  BookOpen,
-  ChevronRight,
-  Edit3,
-  GraduationCap,
-  LogOut,
-  MapPin,
-  MessageCircle,
-  Settings,
-  User,
-  Wallet
+    AlertTriangle,
+    Bell,
+    BookOpen,
+    ChevronRight,
+    Edit3,
+    GraduationCap,
+    LogOut,
+    MapPin,
+    MessageCircle,
+    Settings,
+    User,
+    Wallet
 } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
-  Image,
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View
+    Image,
+    Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
 } from "react-native";
 import { useAuth } from '../context/AuthContext';
 import { useFavorites, type FavoriteUniversity } from '../context/FavoritesContext';
@@ -60,10 +60,12 @@ const InfoRow = ({
 
 const FavoriteUniversityCard = ({ 
   university, 
-  styles 
+  styles,
+  colors
 }: { 
   university: FavoriteUniversity;
   styles: any;
+  colors: any;
 }) => (
   <TouchableOpacity style={styles.favoriteUniversityCard}>
     <View style={styles.universityLogoContainer}>
@@ -76,12 +78,12 @@ const FavoriteUniversityCard = ({
     <View style={styles.universityInfo}>
       <Text style={styles.universityName}>{university.name}</Text>
       <View style={styles.universityLocationRow}>
-        <MapPin size={12} color="#6B7280" />
+        <MapPin size={12} color={colors.textSecondary} />
         <Text style={styles.universityLocation}>{university.location}</Text>
       </View>
       <Text style={styles.universityFee}>{university.fee}</Text>
     </View>
-    <ChevronRight size={20} color="#6B7280" />
+    <ChevronRight size={20} color={colors.textSecondary} />
   </TouchableOpacity>
 );
 
@@ -249,7 +251,7 @@ export default function ProfileScreen() {
                 value={tempAcademicBackground.strand}
                 onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, strand: text }))}
                 placeholder="Enter your strand"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
               />
             </View>
 
@@ -260,7 +262,7 @@ export default function ProfileScreen() {
                 value={tempAcademicBackground.gpa}
                 onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, gpa: text }))}
                 placeholder="Enter your GPA"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
                 keyboardType="numeric"
               />
             </View>
@@ -272,7 +274,7 @@ export default function ProfileScreen() {
                 value={tempAcademicBackground.school}
                 onChangeText={(text) => setTempAcademicBackground(prev => ({ ...prev, school: text }))}
                 placeholder="Enter your senior high school"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
               />
             </View>
           </ScrollView>
@@ -325,7 +327,7 @@ export default function ProfileScreen() {
                 value={tempPreferences.budget}
                 onChangeText={(text) => setTempPreferences(prev => ({ ...prev, budget: text }))}
                 placeholder="Enter your budget range"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
               />
             </View>
 
@@ -336,7 +338,7 @@ export default function ProfileScreen() {
                 value={tempPreferences.course}
                 onChangeText={(text) => setTempPreferences(prev => ({ ...prev, course: text }))}
                 placeholder="Enter your preferred course"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
               />
             </View>
 
@@ -347,7 +349,7 @@ export default function ProfileScreen() {
                 value={tempPreferences.location}
                 onChangeText={(text) => setTempPreferences(prev => ({ ...prev, location: text }))}
                 placeholder="Enter your preferred location"
-                placeholderTextColor="#9CA3AF"
+                placeholderTextColor={colors.textMuted}
               />
             </View>
           </ScrollView>
@@ -389,7 +391,7 @@ export default function ProfileScreen() {
                     <View style={styles.universityInfo}>
                       <Text style={styles.universityName}>{university.name}</Text>
                       <View style={styles.universityLocationRow}>
-                        <MapPin size={12} color="#6B7280" />
+                        <MapPin size={12} color={colors.textSecondary} />
                         <Text style={styles.universityLocation}>{university.location}</Text>
                       </View>
                       <Text style={styles.universityFee}>{university.fee}</Text>
@@ -516,7 +518,7 @@ export default function ProfileScreen() {
             <>
               <View style={styles.favoriteUniversitiesList}>
                 {favoriteUniversities.slice(0, 2).map((university) => (
-                  <FavoriteUniversityCard key={university.id} university={university} styles={styles} />
+                  <FavoriteUniversityCard key={university.id} university={university} styles={styles} colors={colors} />
                 ))}
               </View>
               {favoriteUniversities.length > 2 && (
@@ -711,33 +713,33 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 18,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 28,
   },
   editButton: {
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   sectionContent: {
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     marginHorizontal: 16,
     borderRadius: 16,
     padding: 16,
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
   },
   infoRow: {
     flexDirection: "row",
     alignItems: "center",
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: colors.border,
   },
   infoIcon: {
     width: 40,
@@ -754,7 +756,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 12,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 16,
     marginBottom: 2,
   },
@@ -762,11 +764,11 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 20,
   },
   placeholderText: {
-    color: "#9CA3AF",
+    color: colors.textMuted,
     fontStyle: "italic",
     fontWeight: "400",
   },
@@ -774,10 +776,10 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 20,
     borderBottomWidth: 1,
-    borderBottomColor: "#2A71D0",
+    borderBottomColor: colors.primary,
     paddingVertical: 2,
     paddingHorizontal: 0,
   },
@@ -826,7 +828,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 12,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 16,
     marginLeft: 4,
   },
@@ -834,7 +836,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 12,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 16,
   },
   viewAllButton: {
@@ -848,7 +850,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#2A71D0",
+    color: colors.primary,
     lineHeight: 20,
     marginRight: 4,
   },
@@ -861,7 +863,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 24,
     marginBottom: 8,
     textAlign: "center",
@@ -870,7 +872,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#9CA3AF",
+    color: colors.textMuted,
     lineHeight: 20,
     textAlign: "center",
   },
@@ -879,13 +881,13 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: "center",
     paddingVertical: 16,
     borderBottomWidth: 1,
-    borderBottomColor: "#F3F4F6",
+    borderBottomColor: colors.border,
   },
   settingIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#F3F4F6",
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 12,
@@ -895,7 +897,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 24,
   },
   bottomSpacing: {
@@ -909,12 +911,12 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
   },
   modalContainer: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 24,
     margin: 20,
     minWidth: 300,
-    shadowColor: '#000',
+    shadowColor: colors.text,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -940,14 +942,14 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Arimo',
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     textAlign: 'center',
   },
   modalMessage: {
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '400',
-    color: '#6B7280',
+    color: colors.textSecondary,
     textAlign: 'center',
     lineHeight: 24,
     marginBottom: 24,
@@ -963,14 +965,14 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingHorizontal: 24,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#D1D5DB',
-    backgroundColor: 'white',
+    borderColor: colors.border,
+    backgroundColor: colors.surface,
   },
   modalCancelText: {
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '600',
-    color: '#374151',
+    color: colors.text,
     textAlign: 'center',
   },
   modalConfirmButton: {
@@ -1013,7 +1015,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   // Edit Modal Styles
   editModalContainer: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
   },
   editModalHeader: {
     flexDirection: 'row',
@@ -1021,27 +1023,27 @@ const createStyles = (colors: any) => StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 16,
     paddingVertical: 16,
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   editModalTitle: {
     fontSize: 18,
     fontFamily: 'Arimo',
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
   },
   editModalCancelText: {
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '600',
-    color: '#6B7280',
+    color: colors.textSecondary,
   },
   editModalSaveText: {
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '600',
-    color: '#2A71D0',
+    color: colors.primary,
   },
   editModalContent: {
     flex: 1,
@@ -1054,17 +1056,18 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '600',
-    color: '#111827',
+    color: colors.text,
     marginBottom: 8,
   },
   editModalInput: {
     borderWidth: 1,
-    borderColor: '#D1D5DB',
+    borderColor: colors.border,
     borderRadius: 8,
     paddingHorizontal: 12,
     paddingVertical: 12,
     fontSize: 16,
     fontFamily: 'Arimo',
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
+    color: colors.text,
   },
 });

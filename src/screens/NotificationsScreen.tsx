@@ -1,23 +1,24 @@
 import { useNavigation } from '@react-navigation/native';
 import {
-    ArrowLeft,
-    Bell,
-    Check,
-    CheckCircle,
-    GraduationCap,
-    Heart,
-    Info,
-    MessageCircle
+  ArrowLeft,
+  Bell,
+  Check,
+  CheckCircle,
+  GraduationCap,
+  Heart,
+  Info,
+  MessageCircle
 } from "lucide-react-native";
 import React, { useEffect } from "react";
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { useNotifications, type Notification, type NotificationType } from '../context/NotificationsContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 // ---------------- Helper Functions ----------------
 const getNotificationIcon = (type: NotificationType) => {
@@ -72,11 +73,13 @@ const formatTimestamp = (timestamp: Date) => {
 const NotificationCard = ({ 
   notification, 
   onPress, 
-  onMarkAsRead 
+  onMarkAsRead,
+  styles
 }: { 
   notification: Notification; 
   onPress: () => void;
   onMarkAsRead: () => void;
+  styles: any;
 }) => (
   <TouchableOpacity style={styles.notificationCard} onPress={onPress}>
     <View style={styles.notificationHeader}>
@@ -114,6 +117,8 @@ const NotificationCard = ({
 
 // ---------------- Main Component ----------------
 export default function NotificationsScreen() {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const navigation = useNavigation();
   const { notifications, unreadCount, markAsRead, markAllAsRead } = useNotifications();
 
@@ -181,6 +186,7 @@ export default function NotificationsScreen() {
                   notification={notification}
                   onPress={() => handleNotificationPress(notification)}
                   onMarkAsRead={() => markAsRead(notification.id)}
+                  styles={styles}
                 />
               ))}
           </View>
@@ -197,6 +203,7 @@ export default function NotificationsScreen() {
                   notification={notification}
                   onPress={() => handleNotificationPress(notification)}
                   onMarkAsRead={() => markAsRead(notification.id)}
+                  styles={styles}
                 />
               ))}
           </View>
@@ -219,10 +226,10 @@ export default function NotificationsScreen() {
 }
 
 // ---------------- Styles ----------------
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F9FAFB",
+    backgroundColor: colors.background,
   },
   header: {
     flexDirection: "row",
@@ -231,15 +238,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingTop: 60,
     paddingBottom: 24,
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderBottomWidth: 1,
-    borderBottomColor: "#E5E7EB",
+    borderBottomColor: colors.border,
   },
   backButton: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#F0F9FF",
+    backgroundColor: colors.backgroundSecondary,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -247,7 +254,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: "Poppins",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     flex: 1,
     textAlign: "center",
     marginHorizontal: 16,
@@ -277,18 +284,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#374151",
+    color: colors.text,
     paddingHorizontal: 16,
     marginBottom: 12,
   },
 
   notificationCard: {
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     marginHorizontal: 16,
     marginBottom: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
     position: "relative",
   },
   notificationHeader: {
@@ -317,12 +324,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#6B7280",
+    color: colors.textSecondary,
     flex: 1,
     marginRight: 8,
   },
   unreadTitle: {
-    color: "#111827",
+    color: colors.text,
     fontWeight: "700",
   },
   notificationTime: {
@@ -335,11 +342,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#9CA3AF",
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   unreadMessage: {
-    color: "#6B7280",
+    color: colors.textSecondary,
   },
   markReadButton: {
     width: 28,

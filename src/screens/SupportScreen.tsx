@@ -1,19 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
 import {
-    ChevronDown,
-    ChevronUp,
-    HelpCircle,
-    Mail,
-    Phone
+  ChevronDown,
+  ChevronUp,
+  HelpCircle,
+  Mail,
+  Phone
 } from "lucide-react-native";
 import React, { useState } from "react";
 import {
-    Linking,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  Linking,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { useThemedColors } from '../hooks/useThemedColors';
 
@@ -41,8 +41,8 @@ const faqData: FAQItem[] = [
   },
   {
     id: '2',
-    question: 'How does the matching algorithm work?',
-    answer: 'EduMatch uses advanced AI algorithms to match you with universities based on your academic performance, preferences, location, program interests, and career goals. Our AI continuously learns and improves to provide you with the most relevant matches. The more complete your profile, the better your matches will be.'
+    question: 'How does the matching system work?',
+    answer: 'EduMatch suggests universities based on your profile information including academic performance, preferences, location, program interests, and career goals. The system analyzes your profile data to recommend universities that align with your educational background and aspirations. The more complete your profile, the better your university suggestions will be.'
   },
   {
     id: '3',
@@ -51,8 +51,8 @@ const faqData: FAQItem[] = [
   },
   {
     id: '5',
-    question: 'What if I don\'t like my matches?',
-    answer: 'You can refine your preferences in your profile settings. Adjust your location preferences, program interests, or other criteria to get better matches. Our AI algorithm learns from your interactions and feedback to continuously improve future recommendations.'
+    question: 'What if I don\'t like my university suggestions?',
+    answer: 'You can update your preferences in your profile settings. Adjust your location preferences, program interests, academic requirements, or other criteria to get better university suggestions. The system will provide new recommendations based on your updated profile information.'
   },
   {
     id: '6',

@@ -1,4 +1,4 @@
-import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react-native';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React from 'react';
 import {
   Modal,
@@ -15,11 +15,13 @@ import { ProgramChoiceStep } from '../components/application/ProgramChoiceStep';
 import { ReviewStep } from '../components/application/ReviewStep';
 import { STEPS, TOTAL_STEPS } from '../constants/applicationSteps';
 import { useApplicationForm } from '../hooks/useApplicationForm';
-import { colors } from '../theme/colors';
+import { useThemedColors } from '../hooks/useThemedColors';
 import { ApplyScreenProps } from '../types/applicationTypes';
 
 const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
   const insets = useSafeAreaInsets();
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const { schoolData } = route.params || {};
   
   const {
@@ -48,7 +50,7 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
         style={styles.backButton}
         onPress={() => navigation.goBack()}
       >
-        <ChevronLeft size={16} color={colors.white} />
+        <ChevronLeft size={16} color={colors.textInverse} />
       </TouchableOpacity>
       <Text style={styles.headerTitle}>Application Form</Text>
     </View>
@@ -79,7 +81,7 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
               ]}>
                 <IconComponent 
                   size={20} 
-                  color={isActive || isCompleted ? colors.white : colors.textSecondary} 
+                  color={isActive || isCompleted ? colors.textInverse : colors.textSecondary} 
                 />
               </View>
               <Text style={[
@@ -257,7 +259,7 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
           {isLoading && currentStep === 4 ? 'SUBMITTING...' : 
            currentStep === 4 ? 'SUBMIT APPLICATION' : 'NEXT'}
         </Text>
-        {currentStep !== 4 && <ChevronRight size={16} color={colors.white} />}
+        {currentStep !== 4 && <ChevronRight size={16} color={colors.textInverse} />}
       </TouchableOpacity>
     </View>
   );
@@ -277,7 +279,7 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
@@ -297,13 +299,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerTitle: {
-    color: colors.white,
+    color: colors.textInverse,
     fontSize: 20,
     fontWeight: '700',
     marginLeft: 12,
   },
   progressContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     paddingHorizontal: 16,
     paddingTop: 16,
     paddingBottom: 16,
@@ -371,7 +373,7 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   bottomContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopWidth: 1,
     borderTopColor: colors.border,
     paddingHorizontal: 16,
@@ -418,7 +420,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   nextButtonText: {
-    color: colors.white,
+    color: colors.textInverse,
   },
   disabledButtonText: {
     color: colors.textSecondary,
@@ -430,7 +432,7 @@ const styles = StyleSheet.create({
     justifyContent: 'flex-end',
   },
   modalContent: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     maxHeight: '70%',
@@ -481,7 +483,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   pickerItemTextSelected: {
-    color: colors.white,
+    color: colors.textInverse,
     fontWeight: '600',
   },
 });

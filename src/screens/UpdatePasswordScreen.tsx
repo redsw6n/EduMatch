@@ -12,6 +12,7 @@ import {
     View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface UpdatePasswordScreenProps {
   navigation: any;
@@ -26,6 +27,8 @@ export const UpdatePasswordScreen: React.FC<UpdatePasswordScreenProps> = ({
   navigation, 
   route 
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -256,10 +259,10 @@ export const UpdatePasswordScreen: React.FC<UpdatePasswordScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -288,7 +291,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'Inter',
     fontWeight: '700',
-    color: 'black',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 54,
     width: 320.8,

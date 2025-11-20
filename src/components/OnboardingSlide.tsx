@@ -33,13 +33,18 @@ export const OnboardingSlide: React.FC<OnboardingSlideProp> = ({
         <View style={styles.redBox} />
       )}
       
-      {/* Custom content, image, or illustration */}
-      {!showRedBox && (
+      {/* Image container for onboarding images */}
+      {image && !showRedBox && (
+        <View style={styles.imageContainer}>
+          <Image source={image} style={styles.onboardingImage} resizeMode="cover" />
+        </View>
+      )}
+      
+      {/* Custom content or illustration */}
+      {!showRedBox && !image && (
         <View style={styles.illustrationContainer}>
           {customContent ? (
             customContent
-          ) : image ? (
-            <Image source={image} style={styles.image} resizeMode="contain" />
           ) : (
             <Text style={styles.illustration}>{illustration}</Text>
           )}
@@ -112,6 +117,18 @@ const styles = StyleSheet.create({
     height: height * 0.4,
     maxWidth: 300,
     maxHeight: 300,
+  },
+  // New styles for onboarding images
+  imageContainer: {
+    position: 'absolute',
+    width: 390,
+    height: 450,
+    left: 0,
+    top: 0,
+  },
+  onboardingImage: {
+    width: '100%',
+    height: '100%',
   },
   textContainer: {
     flex: 1,

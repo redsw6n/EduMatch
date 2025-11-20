@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { OnboardingSlide } from '../components/OnboardingSlide';
 import { PrimaryButton } from '../components/PrimaryButton';
 import { setOnboardingCompleted } from '../context/AuthContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 const { width } = Dimensions.get('window');
 
@@ -29,7 +30,8 @@ const onboardingData = [
     backgroundColor: 'white',
     titleColor: '#2A71D0',
     descriptionColor: '#6B7280',
-    showRedBox: true,
+    showRedBox: false,
+    image: require('../../assets/images/students-on-stairs.jpg'),
   },
   {
     id: '2',
@@ -38,7 +40,8 @@ const onboardingData = [
     backgroundColor: 'white',
     titleColor: '#2A71D0', 
     descriptionColor: '#6B7280',
-    showRedBox: true, // Adding red placeholder for second screen image
+    showRedBox: false,
+    image: require('../../assets/images/students_laptops.png'),
   },
   {
     id: '3',
@@ -47,11 +50,14 @@ const onboardingData = [
     backgroundColor: 'white',
     titleColor: '#2A71D0',
     descriptionColor: '#6B7280',
-    showRedBox: true, // Adding red placeholder for third screen image
+    showRedBox: false,
+    image: require('../../assets/images/graduate.png'),
   },
 ];
 
 export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const [currentIndex, setCurrentIndex] = useState(0);
   const flatListRef = useRef<FlatList>(null);
 
@@ -98,6 +104,7 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }
       titleColor={item.titleColor}
       descriptionColor={item.descriptionColor}
       showRedBox={item.showRedBox}
+      image={item.image}
     />
   );
 
@@ -157,10 +164,10 @@ export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ navigation }
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   header: {
     position: 'absolute',
@@ -178,7 +185,7 @@ const styles = StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    color: 'white',
+    color: colors.textInverse,
     fontWeight: '700',
     fontFamily: 'Inter',
   },

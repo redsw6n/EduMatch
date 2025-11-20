@@ -5,7 +5,7 @@ import {
     Text,
     View,
 } from 'react-native';
-import { colors } from '../../theme/colors';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { FormData } from '../../types/applicationTypes';
 
 interface ReviewStepProps {
@@ -20,6 +20,8 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   formData,
   schoolData,
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   return (
     <View style={styles.reviewFormContainer}>
       <Text style={styles.reviewFormTitle}>Submit</Text>
@@ -27,7 +29,7 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
       <View style={styles.reviewContent}>
         {/* Success Icon */}
         <View style={styles.reviewIconContainer}>
-          <CheckCircle size={40} color={colors.white} strokeWidth={3.33} />
+          <CheckCircle size={40} color={colors.textInverse} strokeWidth={3.33} />
         </View>
 
         {/* Review Header */}
@@ -158,9 +160,9 @@ export const ReviewStep: React.FC<ReviewStepProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   reviewFormContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
   reviewSummaryCard: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,

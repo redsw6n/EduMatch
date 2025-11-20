@@ -7,7 +7,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { colors } from '../../theme/colors';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { FormData } from '../../types/applicationTypes';
 
 interface PersonalInfoStepProps {
@@ -21,6 +21,8 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   updatePersonalInfo,
   onOpenDatePicker,
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   return (
     <View style={styles.formContainer}>
       <Text style={styles.formTitle}>Personal Info</Text>
@@ -120,9 +122,9 @@ export const PersonalInfoStep: React.FC<PersonalInfoStepProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   formContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -158,7 +160,7 @@ const styles = StyleSheet.create({
   },
   textInput: {
     height: 36,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
@@ -175,7 +177,7 @@ const styles = StyleSheet.create({
   },
   datePickerButton: {
     height: 36,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,

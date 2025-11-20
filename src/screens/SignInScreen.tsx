@@ -13,12 +13,15 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface SignInScreenProps {
   navigation: any;
 }
 
 export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -106,12 +109,13 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardAvoidingView}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
       >
         <View style={styles.content}>
-          {/* Header with icon */}
+          {/* Header with logo */}
           <View style={styles.headerContainer}>
             <Image 
-              source={require('../../assets/images/icon.png')}
+              source={require('../../assets/images/logomark.png')}
               style={styles.headerIcon}
               resizeMode="contain"
             />
@@ -168,9 +172,9 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
                 onPress={() => setShowPassword(!showPassword)}
               >
                 {showPassword ? (
-                  <EyeOff size={20} color="#000000" />
+                  <EyeOff size={20} color={colors.text} />
                 ) : (
-                  <Eye size={20} color="#000000" />
+                  <Eye size={20} color={colors.text} />
                 )}
               </TouchableOpacity>
               {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
@@ -195,24 +199,25 @@ export const SignInScreen: React.FC<SignInScreenProps> = ({ navigation }) => {
               <Text style={styles.signInButtonText}>Sign In</Text>
             </TouchableOpacity>
             
-            {/* Footer */}
-            <View style={styles.footer}>
-              <Text style={styles.footerText}>Don't have an account? </Text>
-              <TouchableOpacity onPress={handleSignUpPress}>
-                <Text style={styles.footerLink}>Sign Up</Text>
-              </TouchableOpacity>
             </View>
-          </View>
+        </View>
+        
+        {/* Footer - positioned absolutely */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>Don't have an account? </Text>
+          <TouchableOpacity onPress={handleSignUpPress}>
+            <Text style={styles.footerLink}>Sign Up</Text>
+          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -229,13 +234,13 @@ const styles = StyleSheet.create({
     height: 220,
     left: 0,
     top: 0,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.backgroundSecondary,
     borderBottomRightRadius: 30,
     borderBottomLeftRadius: 30,
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   headerIcon: {
     width: 120,
@@ -249,7 +254,7 @@ const styles = StyleSheet.create({
     left: 104.33,
     top: 240,
     textAlign: 'center',
-    color: 'black',
+    color: colors.text,
     fontSize: 40,
     fontFamily: 'Inter',
     fontWeight: '700',
@@ -274,10 +279,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 52,
     fontSize: 14,
-    color: '#000000',
+    color: colors.text,
     paddingHorizontal: 12,
     paddingTop: 8,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     borderWidth: 1.2,
     borderColor: 'transparent',
@@ -286,10 +291,10 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 52,
     fontSize: 14,
-    color: '#000000',
+    color: colors.text,
     paddingHorizontal: 12,
     paddingTop: 8,
-    backgroundColor: '#D9D9D9',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     borderWidth: 1.2,
     borderColor: 'transparent',
@@ -314,7 +319,7 @@ const styles = StyleSheet.create({
     left: 12,
     top: 16,
     fontSize: 14,
-    color: '#000000',
+    color: colors.text,
     backgroundColor: 'transparent',
     paddingHorizontal: 4,
     zIndex: 1,
@@ -323,8 +328,8 @@ const styles = StyleSheet.create({
   floatingLabelActive: {
     top: -8,
     fontSize: 12,
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
+    color: colors.text,
+    backgroundColor: colors.background,
     borderRadius: 5,
   },
   eyeIcon: {
@@ -365,25 +370,26 @@ const styles = StyleSheet.create({
   },
   signInButtonText: {
     textAlign: 'center',
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '600',
     lineHeight: 20,
   },
-  // Footer
+  // Footer - positioned absolutely at bottom
   footer: {
     position: 'absolute',
+    bottom: 30,
     left: 0,
     right: 0,
-    bottom: 50,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 16,
   },
   footerText: {
     textAlign: 'center',
-    color: 'black',
+    color: colors.text,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',

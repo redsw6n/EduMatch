@@ -241,7 +241,7 @@ function HomeTabScreen() {
               <View style={styles.schoolCarouselInfo}>
                 <Text style={styles.schoolCarouselName}>{item.name}</Text>
                 <View style={styles.locationRow}>
-                  <MapPin size={12} color="#6B7280" />
+                  <MapPin size={12} color={colors.textSecondary} />
                   <Text style={styles.schoolCarouselLocation}>{item.location}</Text>
                 </View>
                 <Text style={styles.tuitionCarouselFee}>{item.fee}</Text>
@@ -263,7 +263,7 @@ function DummyScreen() {
   
   return (
     <View style={styles.center}>
-      <Text>Coming Soon...</Text>
+      <Text style={styles.placeholderText}>Coming Soon...</Text>
     </View>
   );
 }
@@ -297,8 +297,12 @@ export default function HomeScreen() {
                 return null;
             }
           },
-          tabBarActiveTintColor: "#007bff",
-          tabBarInactiveTintColor: "gray",
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textMuted,
+          tabBarStyle: {
+            backgroundColor: colors.surface,
+            borderTopColor: colors.border,
+          },
         })}
       >
         <Tab.Screen name="Home" component={HomeTabScreen} />
@@ -418,7 +422,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   sectionTitle: { 
     fontSize: 18, 
     fontWeight: "700", 
-    color: "#111827",
+    color: colors.text,
     fontFamily: "Arimo",
     lineHeight: 28,
     marginBottom: 12,
@@ -451,7 +455,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 24,
   },
   recommendedSection: {
@@ -480,7 +484,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 24,
     marginBottom: 4,
   },
@@ -515,13 +519,13 @@ const createStyles = (colors: any) => StyleSheet.create({
     paddingRight: 0,
   },
   schoolCarouselCard: {
-    backgroundColor: "white",
+    backgroundColor: colors.surface,
     borderRadius: 16,
     padding: 0,
     marginRight: 12,
     width: 280,
     borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderColor: colors.border,
     overflow: "hidden",
   },
 
@@ -533,7 +537,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#111827",
+    color: colors.text,
     lineHeight: 24,
     marginBottom: 8,
   },
@@ -541,7 +545,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
     marginLeft: 4,
   },
@@ -549,7 +553,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "#6B7280",
+    color: colors.textSecondary,
     lineHeight: 20,
     marginTop: 4,
   },

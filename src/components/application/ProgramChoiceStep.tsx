@@ -8,7 +8,7 @@ import {
     TouchableOpacity,
     View,
 } from 'react-native';
-import { colors } from '../../theme/colors';
+import { useThemedColors } from '../../hooks/useThemedColors';
 import { FormData } from '../../types/applicationTypes';
 
 interface ProgramChoiceStepProps {
@@ -26,6 +26,8 @@ export const ProgramChoiceStep: React.FC<ProgramChoiceStepProps> = ({
   campusOptions,
   schoolName,
 }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const [showFirstChoiceDropdown, setShowFirstChoiceDropdown] = useState(false);
   const [showSecondChoiceDropdown, setShowSecondChoiceDropdown] = useState(false);
   const [showCampusDropdown, setShowCampusDropdown] = useState(false);
@@ -156,9 +158,9 @@ export const ProgramChoiceStep: React.FC<ProgramChoiceStepProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   programFormContainer: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1,
     borderColor: colors.border,
@@ -193,7 +195,7 @@ const styles = StyleSheet.create({
   },
   dropdownButton: {
     height: 44,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,
@@ -219,7 +221,7 @@ const styles = StyleSheet.create({
     transform: [{ rotate: '180deg' }],
   },
   dropdownList: {
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 8,
     borderWidth: 1,
     borderColor: colors.border,
@@ -252,7 +254,7 @@ const styles = StyleSheet.create({
     color: colors.text,
   },
   dropdownItemTextSelected: {
-    color: colors.white,
+    color: colors.textInverse,
     fontWeight: '600',
   },
   programInfoSection: {
@@ -267,7 +269,7 @@ const styles = StyleSheet.create({
   },
   programInfoTextArea: {
     height: 120,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 10,
     borderWidth: 1,
     borderColor: colors.border,

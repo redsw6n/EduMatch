@@ -19,8 +19,8 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { PrimaryButton } from '../components/PrimaryButton';
+import { useThemedColors } from '../hooks/useThemedColors';
 import type { RootStackParamList } from '../navigation/AppNavigator';
-import { colors } from '../theme/colors';
 import { typography } from '../theme/typography';
 
 type SchoolProfileScreenNavigationProp = NativeStackNavigationProp<
@@ -132,6 +132,8 @@ const mockSchoolData: SchoolProfileData = {
 export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
   route,
 }) => {
+  const themedColors = useThemedColors();
+  const styles = createStyles(themedColors);
   const navigation = useNavigation<SchoolProfileScreenNavigationProp>();
   const schoolData = route?.params?.schoolData || mockSchoolData;
   const insets = useSafeAreaInsets();
@@ -179,7 +181,7 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
           {item.degree} • {item.duration}
         </Text>
       </View>
-      <GraduationCap size={20} color={colors.textSecondary} />
+      <GraduationCap size={20} color={themedColors.textSecondary} />
     </View>
   );
 
@@ -197,9 +199,9 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
             {item.programs.length} program{item.programs.length !== 1 ? 's' : ''}
           </Text>
           {item.isExpanded ? (
-            <ChevronUp size={20} color={colors.textSecondary} />
+            <ChevronUp size={20} color={themedColors.textSecondary} />
           ) : (
-            <ChevronDown size={20} color={colors.textSecondary} />
+            <ChevronDown size={20} color={themedColors.textSecondary} />
           )}
         </View>
       </TouchableOpacity>
@@ -246,7 +248,7 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
           <Text style={styles.schoolName}>{schoolData.name}</Text>
           
           <View style={styles.locationContainer}>
-            <MapPin size={16} color={colors.textSecondary} />
+            <MapPin size={16} color={themedColors.textSecondary} />
             <Text style={styles.locationText}>{schoolData.location}</Text>
           </View>
 
@@ -313,7 +315,7 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.backgroundSecondary,
@@ -362,7 +364,7 @@ const styles = StyleSheet.create({
   infoSection: {
     padding: 20,
     marginHorizontal: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
@@ -405,7 +407,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     paddingHorizontal: 16,
     marginHorizontal: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
@@ -430,7 +432,7 @@ const styles = StyleSheet.create({
   programsSection: {
     padding: 20,
     marginHorizontal: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
@@ -477,7 +479,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: colors.white,
+    backgroundColor: colors.background,
     padding: 12,
     borderRadius: 8,
     marginBottom: 8,
@@ -500,7 +502,7 @@ const styles = StyleSheet.create({
   gallerySection: {
     padding: 20,
     marginHorizontal: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderRadius: 16,
     marginBottom: 16,
     borderWidth: 1,
@@ -528,7 +530,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     padding: 20,
     paddingTop: 16,
-    backgroundColor: colors.white,
+    backgroundColor: colors.surface,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     borderTopWidth: 1,

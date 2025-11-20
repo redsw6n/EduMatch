@@ -8,6 +8,7 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface TimelineStepData {
   id: string;
@@ -27,6 +28,8 @@ const ApplicationTimelineScreen: React.FC<ApplicationTimelineScreenProps> = ({
   route 
 }) => {
   const insets = useSafeAreaInsets();
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   
   // This would come from route params or API
   const applicationData = route?.params?.applicationData || {
@@ -387,10 +390,10 @@ const ApplicationTimelineScreen: React.FC<ApplicationTimelineScreenProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
   },
   header: {
     backgroundColor: '#2A71D0',
@@ -429,10 +432,10 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   infoCard: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     padding: 24,
     marginBottom: 24,
   },
@@ -444,7 +447,7 @@ const styles = StyleSheet.create({
   universityName: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     lineHeight: 16,
   },
@@ -459,7 +462,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Arimo',
     lineHeight: 20,
     marginBottom: 4,
@@ -467,7 +470,7 @@ const styles = StyleSheet.create({
   infoValue: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Arimo',
     lineHeight: 24,
   },
@@ -483,17 +486,17 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   timelineCard: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     padding: 24,
     marginBottom: 24,
   },
   timelineCardTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     lineHeight: 16,
     marginBottom: 30,
@@ -543,7 +546,7 @@ const styles = StyleSheet.create({
   timelineTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     lineHeight: 24,
   },
@@ -552,13 +555,13 @@ const styles = StyleSheet.create({
   },
   timelineDate: {
     fontSize: 12,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Arimo',
     lineHeight: 16,
   },
   timelineDescription: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Inter',
     lineHeight: 20,
     marginBottom: 12,
@@ -578,10 +581,10 @@ const styles = StyleSheet.create({
     lineHeight: 16,
   },
   infoNoticeCard: {
-    backgroundColor: 'rgba(243, 244, 246, 0.50)',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     padding: 16,
     marginBottom: 24,
   },
@@ -594,7 +597,7 @@ const styles = StyleSheet.create({
   infoNoticeTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     fontFamily: 'Poppins',
     lineHeight: 24,
   },
@@ -603,7 +606,7 @@ const styles = StyleSheet.create({
   },
   infoNoticeItem: {
     fontSize: 14,
-    color: '#6B7280',
+    color: colors.textSecondary,
     fontFamily: 'Inter',
     lineHeight: 20,
   },

@@ -8,6 +8,7 @@ import {
     View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface CareerGuidanceScreenProps {
   navigation: any;
@@ -136,6 +137,8 @@ const careerResults = {
 };
 
 const CareerGuidanceScreen: React.FC<CareerGuidanceScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const insets = useSafeAreaInsets();
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | number | null>(null);
@@ -473,7 +476,7 @@ const CareerGuidanceScreen: React.FC<CareerGuidanceScreenProps> = ({ navigation 
           accessibilityLabel="Previous question"
           accessibilityRole="button"
         >
-          <ArrowLeft size={16} color={isFirstQuestion ? '#111827' : '#111827'} />
+          <ArrowLeft size={16} color={colors.text} />
           <Text style={[styles.previousButtonText, isFirstQuestion && styles.buttonTextDisabled]}>
             PREVIOUS
           </Text>
@@ -496,10 +499,10 @@ const CareerGuidanceScreen: React.FC<CareerGuidanceScreenProps> = ({ navigation 
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.background,
   },
   header: {
     height: 68,
@@ -524,12 +527,12 @@ const styles = StyleSheet.create({
     lineHeight: 28,
   },
   progressSection: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     paddingTop: 16,
     paddingBottom: 16,
     paddingHorizontal: 16,
     borderBottomWidth: 1.26,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: colors.border,
   },
   progressHeader: {
     flexDirection: 'row',
@@ -538,7 +541,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   questionLabel: {
-    color: '#111827',
+    color: colors.text,
     fontSize: 14,
     fontFamily: 'Arimo',
     fontWeight: '400',
@@ -560,10 +563,10 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   questionCard: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     padding: 24,
     marginBottom: 20,
   },
@@ -582,7 +585,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   questionNumber: {
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 16,
     fontFamily: 'Arimo',
     fontWeight: '700',
@@ -593,10 +596,10 @@ const styles = StyleSheet.create({
     paddingVertical: 3,
     borderRadius: 10,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
   },
   questionType: {
-    color: '#111827',
+    color: colors.text,
     fontSize: 12,
     fontFamily: 'Arimo',
     fontWeight: '400',
@@ -606,7 +609,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   questionText: {
-    color: '#111827',
+    color: colors.text,
     fontSize: 16,
     fontFamily: 'Poppins',
     fontWeight: '700',
@@ -640,7 +643,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#2A71D0',
   },
   optionText: {
-    color: '#111827',
+    color: colors.text,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
@@ -648,9 +651,9 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   footer: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderTopWidth: 1.26,
-    borderTopColor: '#E5E7EB',
+    borderTopColor: colors.border,
     paddingTop: 17,
     paddingHorizontal: 16,
     flexDirection: 'row',
@@ -662,14 +665,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 13,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 10,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     gap: 8,
   },
   previousButtonText: {
-    color: '#111827',
+    color: colors.text,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '500',
@@ -687,7 +690,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   nextButtonText: {
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '500',
@@ -789,7 +792,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Poppins',
     fontWeight: '700',
-    color: '#111827',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 8,
     lineHeight: 28,
@@ -803,7 +806,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
   },
   primaryResultCard: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1.26,
     borderColor: '#0C5441',
@@ -881,10 +884,10 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   secondaryResultCard: {
-    backgroundColor: 'white',
+    backgroundColor: colors.surface,
     borderRadius: 16,
     borderWidth: 1.26,
-    borderColor: '#E5E7EB',
+    borderColor: colors.border,
     padding: 16,
     marginBottom: 12,
     flexDirection: 'row',

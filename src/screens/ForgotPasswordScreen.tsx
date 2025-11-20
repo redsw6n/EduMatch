@@ -1,23 +1,26 @@
 import { ArrowLeft, Mail } from 'lucide-react-native';
 import React, { useEffect, useState } from 'react';
 import {
-    Alert,
-    Image,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useThemedColors } from '../hooks/useThemedColors';
 
 interface ForgotPasswordScreenProps {
   navigation: any;
 }
 
 export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navigation }) => {
+  const colors = useThemedColors();
+  const styles = createStyles(colors);
   const [email, setEmail] = useState('');
   const [emailFocused, setEmailFocused] = useState(false);
   const [errors, setErrors] = useState<{ email?: string }>({});
@@ -98,7 +101,7 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navi
             accessibilityLabel="Go back"
             accessibilityRole="button"
           >
-            <ArrowLeft size={24} color="#000" />
+            <ArrowLeft size={24} color={colors.text} />
           </TouchableOpacity>
 
           {/* Logo */}
@@ -120,7 +123,7 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navi
               emailFocused && styles.textInputContainerFocused,
               errors.email && styles.textInputContainerError
             ]}>
-              <Mail size={20} color="#666" style={styles.inputIcon} />
+              <Mail size={20} color={colors.textSecondary} style={styles.inputIcon} />
               <View style={styles.inputContent}>
                 <Text style={[
                   styles.floatingLabel,
@@ -168,10 +171,10 @@ export const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navi
   );
 };
 
-const styles = StyleSheet.create({
+const createStyles = (colors: any) => StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'white',
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     flex: 1,
@@ -200,7 +203,7 @@ const styles = StyleSheet.create({
     fontSize: 30,
     fontFamily: 'Inter',
     fontWeight: '700',
-    color: 'black',
+    color: colors.text,
     textAlign: 'center',
     marginBottom: 91,
     width: 320.8,
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
   textInputContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#D9D9D9',
+    backgroundColor: colors.backgroundSecondary,
     borderRadius: 12,
     height: 52,
     paddingHorizontal: 16,
@@ -242,20 +245,20 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
     backgroundColor: 'transparent',
     zIndex: 1,
   },
   floatingLabelActive: {
     top: 2,
     fontSize: 12,
-    color: '#666',
+    color: colors.textSecondary,
   },
   textInput: {
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '400',
-    color: 'black',
+    color: colors.text,
     paddingTop: 20,
     paddingBottom: 4,
     height: 52,
@@ -280,7 +283,7 @@ const styles = StyleSheet.create({
     opacity: 0.6,
   },
   submitButtonText: {
-    color: 'white',
+    color: colors.textInverse,
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '600',
