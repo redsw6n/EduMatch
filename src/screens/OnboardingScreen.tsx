@@ -185,7 +185,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   skipText: {
     fontSize: 14,
-    color: colors.textInverse,
+    color: colors.background === '#000000' || colors.background === '#121212' ? colors.white : colors.text,
     fontWeight: '700',
     fontFamily: 'Inter',
   },

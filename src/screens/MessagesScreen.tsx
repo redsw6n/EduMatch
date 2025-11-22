@@ -2,15 +2,15 @@ import * as DocumentPicker from 'expo-document-picker';
 import { ChevronLeft, Paperclip, Send } from 'lucide-react-native';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
-    Alert,
-    FlatList,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  FlatList,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useConversations, type Message } from '../context/ConversationsContext';
@@ -223,59 +223,61 @@ const MessagesScreen: React.FC<MessagesScreenProps> = ({ route, navigation }) =>
         </View>
       </View>
 
-      {/* Messages List */}
-      <FlatList
-        ref={flatListRef}
-        data={messages}
-        renderItem={renderMessage}
-        keyExtractor={(item) => item.id}
-        style={styles.messagesList}
-        contentContainerStyle={styles.messagesContent}
-        showsVerticalScrollIndicator={false}
-        onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
-      />
-
-      {/* Input Section */}
+      {/* Messages and Input with Keyboard Avoidance */}
       <KeyboardAvoidingView
+        style={styles.messagesContainer}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
+        <FlatList
+          ref={flatListRef}
+          data={messages}
+          renderItem={renderMessage}
+          keyExtractor={(item) => item.id}
+          style={styles.messagesList}
+          contentContainerStyle={styles.messagesContent}
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+          onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
+        />
+        
+        {/* Input Section */}
         <View style={[styles.inputContainer, { paddingBottom: insets.bottom + 16 }]}>
-          <View style={styles.inputWrapper}>
-            <TouchableOpacity
-              style={styles.fileUploadButton}
-              onPress={handleFileUpload}
-              accessibilityRole="button"
-              accessibilityLabel="Upload file"
-            >
-              <Paperclip size={20} color={colors.textSecondary} />
-            </TouchableOpacity>
-            <TextInput
-              style={styles.textInput}
-              value={message}
-              onChangeText={setMessage}
-              placeholder="Type a message..."
-              placeholderTextColor={colors.textSecondary}
-              multiline
-              maxLength={500}
-              accessibilityLabel="Message input"
+        <View style={styles.inputWrapper}>
+          <TouchableOpacity
+            style={styles.fileUploadButton}
+            onPress={handleFileUpload}
+            accessibilityRole="button"
+            accessibilityLabel="Upload file"
+          >
+            <Paperclip size={20} color={colors.textSecondary} />
+          </TouchableOpacity>
+          <TextInput
+            style={styles.textInput}
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Type a message..."
+            placeholderTextColor={colors.textSecondary}
+            multiline
+            maxLength={500}
+            accessibilityLabel="Message input"
+          />
+          <TouchableOpacity
+            style={[
+              styles.sendButton,
+              message.trim().length === 0 && styles.sendButtonDisabled
+            ]}
+            onPress={sendMessage}
+            disabled={message.trim().length === 0}
+            accessibilityRole="button"
+            accessibilityLabel="Send message"
+          >
+            <Send 
+              size={20} 
+              color={message.trim().length === 0 ? colors.textSecondary : '#FFFFFF'} 
             />
-            <TouchableOpacity
-              style={[
-                styles.sendButton,
-                message.trim().length === 0 && styles.sendButtonDisabled
-              ]}
-              onPress={sendMessage}
-              disabled={message.trim().length === 0}
-              accessibilityRole="button"
-              accessibilityLabel="Send message"
-            >
-              <Send 
-                size={20} 
-                color={message.trim().length === 0 ? colors.textSecondary : '#FFFFFF'} 
-              />
-            </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
+        </View>
         </View>
       </KeyboardAvoidingView>
     </View>
@@ -335,6 +337,9 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontFamily: 'Arimo',
     fontWeight: '700',
     color: '#FFFFFF',
+  },
+  messagesContainer: {
+    flex: 1,
   },
   messagesList: {
     flex: 1,

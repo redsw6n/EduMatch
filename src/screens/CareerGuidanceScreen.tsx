@@ -1,11 +1,11 @@
 import { ArrowLeft, ArrowRight, Target } from 'lucide-react-native';
 import React, { useState } from 'react';
 import {
-    ScrollView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemedColors } from '../hooks/useThemedColors';
@@ -690,7 +690,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     gap: 8,
   },
   nextButtonText: {
-    color: colors.textInverse,
+    color: 'white',
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '500',

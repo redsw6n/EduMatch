@@ -75,30 +75,31 @@ function HomeTabScreen() {
         description: `${school.name} is a prestigious institution offering world-class education and research opportunities.`,
         ranking: '#25 in National Universities',
         founded: '1901',
-        studentCount: '15,000+',
+        studentCount: '18,000+',
         acceptanceRate: '15%',
+        type: 'Private',
         programCategories: [
           {
             id: '1',
-            name: 'Engineering',
+            name: 'College of IT & Engineering',
             isExpanded: false,
             programs: [
-              { id: '1', name: 'Computer Science', duration: '4 years', degree: 'Bachelor of Science' },
-              { id: '2', name: 'Electrical Engineering', duration: '4 years', degree: 'Bachelor of Science' },
+              { id: '1', name: 'Information Technology', duration: '4 years', degree: 'Bachelor of Science' },
             ],
           },
           {
             id: '2',
-            name: 'Business',
+            name: 'Business School',
             isExpanded: false,
             programs: [
-              { id: '3', name: 'Business Administration', duration: '2 years', degree: 'Master of Business Administration' },
+              { id: '2', name: 'Business Administration major in Marketing Management', duration: '4 years', degree: 'Bachelor of Science' },
+              { id: '3', name: 'Accountancy', duration: '4 years', degree: 'Bachelor of Science' },
             ],
           },
         ],
         gallery: [
-          'https://via.placeholder.com/300x200/4285F4/FFFFFF?text=Campus+1',
-          'https://via.placeholder.com/300x200/34A853/FFFFFF?text=Campus+2',
+          require('../../assets/images/swu phinma hall.png'),
+          require('../../assets/images/swu phinma hall.png'),
         ],
       },
     });
@@ -107,23 +108,30 @@ function HomeTabScreen() {
   const recommended: School[] = [
     { 
       id: "1", 
-      name: "Southwestern University", 
+      name: "Southwestern University PHINMA", 
       location: "Urgello, Cebu",
       fee: "₱ 80,000/year",
       image: "https://placehold.co/64x64"
     },
     { 
       id: "2", 
-      name: "University of Cebu", 
-      location: "Sancianko St, Cebu",
-      fee: "₱ 70,000/year",
+      name: "Southwestern University PHINMA", 
+      location: "Urgello, Cebu",
+      fee: "₱ 80,000/year",
       image: "https://placehold.co/64x64"
     },
     { 
       id: "3", 
-      name: "University of San Carlos", 
-      location: "Sitio Nasipit, Cebu",
-      fee: "₱ 100,000/year",
+      name: "Southwestern University PHINMA", 
+      location: "Urgello, Cebu",
+      fee: "₱ 80,000/year",
+      image: "https://placehold.co/64x64"
+    },
+    { 
+      id: "4", 
+      name: "Southwestern University PHINMA", 
+      location: "Urgello, Cebu",
+      fee: "₱ 80,000/year",
       image: "https://placehold.co/64x64"
     },
   ];
@@ -147,22 +155,21 @@ function HomeTabScreen() {
       {/* Confidence Tracker */}
       <View style={styles.confidenceCard}>
         <LinearGradient
-          colors={['#10B981', '#059669']}
+          colors={[`${colors.primary}20`, `${colors.primary}10`]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={styles.confidenceGradient}
         >
           <View style={styles.confidenceHeader}>
-            <TrendingUp size={20} color="#ffffff" />
-            <Text style={styles.confidenceTitle}>Confidence Tracker</Text>
-          </View>
-          <View style={styles.confidenceContent}>
-            <View style={styles.progressRow}>
-              <Text style={styles.progressLabel}>Profile Completion</Text>
-              <Text style={styles.progressPercent}>{completionPercentage}%</Text>
+            <View style={styles.confidenceTitleRow}>
+              <TrendingUp size={20} color={colors.primary} />
+              <Text style={styles.confidenceTitle}>Profile Completion</Text>
             </View>
+            <Text style={styles.progressPercent}>{completionPercentage}%</Text>
+          </View>
+            <View style={styles.confidenceContent}>
             <View style={styles.progressBarBackground}>
-              <View style={[styles.progressBarFill, { width: `${completionPercentage}%` }]} />
+              <View style={[styles.progressBarFill, { width: `${completionPercentage}%`, backgroundColor: colors.primary }]} />
             </View>
             <Text style={styles.progressSubtext}>
               Complete your profile to get better matches
@@ -234,7 +241,7 @@ function HomeTabScreen() {
               accessibilityRole="button"
             >
               <Image
-                source={require('../../assets/images/logomark.png')}
+                source={require('../../assets/images/swu phinma hall.png')}
                 style={styles.schoolCarouselImage}
                 resizeMode="cover"
               />
@@ -359,23 +366,30 @@ const createStyles = (colors: any) => StyleSheet.create({
   confidenceCard: {
     borderRadius: 16,
     marginBottom: 24,
-    borderWidth: 1.26,
-    borderColor: colors.border,
+    borderWidth: 1,
+    borderColor: `${colors.primary}30`,
     overflow: 'hidden',
+    backgroundColor: `${colors.surface}E6`,
   },
   confidenceGradient: {
     padding: 24,
+    backgroundColor: 'transparent',
   },
   confidenceHeader: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 30,
+  },
+  confidenceTitleRow: {
+    flexDirection: "row",
+    alignItems: "center",
   },
   confidenceTitle: {
     fontSize: 16,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#ffffff",
+    color: colors.text,
     marginLeft: 8,
   },
   confidenceContent: {
@@ -396,24 +410,23 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "600",
-    color: "#ffffff",
+    color: colors.primary,
   },
   progressBarBackground: {
     width: "100%",
     height: 8,
-    backgroundColor: "rgba(255, 255, 255, 0.30)",
+    backgroundColor: `${colors.border}60`,
     borderRadius: 42152500,
   },
   progressBarFill: {
     height: 8,
-    backgroundColor: "#ffffff",
     borderRadius: 42152500,
   },
   progressSubtext: {
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "rgba(255, 255, 255, 0.80)",
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   quickActionsSection: {

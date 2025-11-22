@@ -1,12 +1,14 @@
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import React from 'react';
 import {
-  Modal,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
+    KeyboardAvoidingView,
+    Modal,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { DocumentStep } from '../components/application/DocumentStep';
@@ -269,9 +271,19 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
       {renderHeader()}
       {renderProgressIndicator()}
       
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {renderStepContent()}
-      </ScrollView>
+      <KeyboardAvoidingView 
+        style={styles.keyboardContainer}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+      >
+        <ScrollView 
+          style={styles.content} 
+          showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
+        >
+          {renderStepContent()}
+        </ScrollView>
+      </KeyboardAvoidingView>
       
       {renderBottomButtons()}
       {renderDatePicker()}
@@ -280,6 +292,9 @@ const ApplyScreen: React.FC<ApplyScreenProps> = ({ navigation, route }) => {
 };
 
 const createStyles = (colors: any) => StyleSheet.create({
+  keyboardContainer: {
+    flex: 1,
+  },
   container: {
     flex: 1,
     backgroundColor: colors.background,

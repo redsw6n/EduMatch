@@ -38,12 +38,28 @@ export const useApplicationForm = ({ schoolData, navigation }: UseApplicationFor
     },
   });
 
-  // Extract programs from school data
-  const availablePrograms = schoolData?.programCategories 
-    ? schoolData.programCategories.flatMap((category: any) => 
-        category.programs.map((program: any) => program.name)
-      )
-    : ['Computer Science', 'Business Administration', 'Engineering', 'Medicine', 'Liberal Arts'];
+  // Complete SWU PHINMA programs list
+  const availablePrograms = [
+    'Information Technology',
+    'Nursing',
+    'Medical Technology',
+    'Pharmacy',
+    'Radiologic Technology',
+    'Optometry',
+    'Fine Arts Program with Focus on Animation and Visual Communication',
+    'Architecture',
+    'Communication',
+    'Dental Medicine',
+    'Physical Therapy',
+    'Occupational Therapy',
+    'Veterinary Medicine',
+    'Business Administration major in Marketing Management',
+    'Business Administration major in Financial Management',
+    'Accountancy',
+    'Hotel and Restaurant Management',
+    'Psychology',
+    'Biology',
+  ];
 
   // Campus options based on school location
   const campusOptions = schoolData?.location 

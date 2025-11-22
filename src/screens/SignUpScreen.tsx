@@ -22,28 +22,19 @@ interface SignUpScreenProps {
 export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
   const colors = useThemedColors();
   const styles = createStyles(colors);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [errors, setErrors] = useState<{
-    firstName?: string;
-    lastName?: string;
+    fullName?: string;
     email?: string;
     password?: string;
     confirmPassword?: string;
   }>({});
-  
-  // Focus states for floating labels
-  const [firstNameFocused, setFirstNameFocused] = useState(false);
-  const [lastNameFocused, setLastNameFocused] = useState(false);
-  const [emailFocused, setEmailFocused] = useState(false);
-  const [passwordFocused, setPasswordFocused] = useState(false);
-  const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
+  const [activeTab, setActiveTab] = useState<'login' | 'signup'>('signup');
   
   const { signUp, isLoading } = useAuth();
 
@@ -53,11 +44,6 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       headerShown: false,
     });
   }, [navigation]);
-
-  // Helper function to determine if label should be floating
-  const shouldLabelFloat = (focused: boolean, value: string) => {
-    return focused || value.length > 0;
-  };
 
   // Real-time validation functions
   const validateEmail = (emailValue: string) => {
@@ -92,21 +78,15 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
 
   const validateForm = (): boolean => {
     const newErrors: {
-      firstName?: string;
-      lastName?: string;
+      fullName?: string;
       email?: string;
       password?: string;
       confirmPassword?: string;
     } = {};
 
-    // First name validation
-    if (!firstName.trim()) {
-      newErrors.firstName = 'First name is required';
-    }
-
-    // Last name validation
-    if (!lastName.trim()) {
-      newErrors.lastName = 'Last name is required';
+    // Full name validation
+    if (!fullName.trim()) {
+      newErrors.fullName = 'Full name is required';
     }
 
     // Email validation
@@ -136,13 +116,13 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
       return;
     }
 
-    if (!acceptedTerms) {
-      Alert.alert('Terms Required', 'Please accept the Privacy Policy to continue.');
-      return;
-    }
-
     try {
-      await signUp(firstName.trim(), lastName.trim(), email.trim(), password);
+      // Parse full name into first and last name
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
+      await signUp(firstName, lastName, email.trim(), password);
       navigation.reset({
         index: 0,
         routes: [{ name: 'Home' }],
@@ -152,185 +132,206 @@ export const SignUpScreen: React.FC<SignUpScreenProps> = ({ navigation }) => {
     }
   };
 
-  const handleSignInPress = () => {
-    navigation.navigate('SignIn');
+  const handleTabPress = (tab: 'login' | 'signup') => {
+    if (tab === 'login') {
+      navigation.navigate('SignIn');
+    } else {
+      setActiveTab(tab);
+    }
   };
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
         style={styles.keyboardAvoidingView}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 25}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? -60 : -80}
       >
-          <View style={styles.content}>
-          {/* Header with logo */}
-          <View style={styles.headerContainer}>
-            <Image 
-              source={require('../../assets/images/logomark.png')}
-              style={styles.headerIcon}
-              resizeMode="contain"
-            />
-          </View>
+        <View style={styles.content}>
+          {/* Logo - Absolutely positioned within the 120px space */}
+          <Image 
+            source={require('../../assets/images/logomark.png')}
+            style={styles.logo}
+            resizeMode="contain"
+          />
           
-          {/* Sign Up Title */}
-          <Text style={styles.title}>Sign Up</Text>
-          
-          {/* Form Fields */}
-          <View style={styles.formContainer}>
-            {/* First Name and Last Name Row */}
-            <View style={styles.nameRow}>
-              <View style={styles.inputGroup}>
-                <TextInput
-                  style={styles.nameInput}
-                  value={firstName}
-                  onChangeText={setFirstName}
-                  onFocus={() => setFirstNameFocused(true)}
-                  onBlur={() => setFirstNameFocused(false)}
-                />
-                <Text style={[
-                  styles.floatingLabel,
-                  shouldLabelFloat(firstNameFocused, firstName) && styles.floatingLabelActive
-                ]}>First Name</Text>
-              </View>
-              
-              <View style={styles.inputGroup}>
-                <TextInput
-                  style={styles.nameInput}
-                  value={lastName}
-                  onChangeText={setLastName}
-                  onFocus={() => setLastNameFocused(true)}
-                  onBlur={() => setLastNameFocused(false)}
-                />
-                <Text style={[
-                  styles.floatingLabel,
-                  shouldLabelFloat(lastNameFocused, lastName) && styles.floatingLabelActive
-                ]}>Last Name</Text>
-              </View>
-            </View>
-            
-            {/* Email Field */}
-            <View style={[styles.inputGroup, styles.fullWidthInput]}>
-              <TextInput
-                style={[styles.textInput, errors.email && styles.inputError]}
-                value={email}
-                onChangeText={setEmail}
-                onFocus={() => setEmailFocused(true)}
-                onBlur={() => {
-                  setEmailFocused(false);
-                  const emailError = validateEmail(email);
-                  setErrors(prev => ({ ...prev, email: emailError }));
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-              <Text style={[
-                styles.floatingLabel,
-                shouldLabelFloat(emailFocused, email) && styles.floatingLabelActive
-              ]}>Email</Text>
-              {errors.email ? <Text style={styles.errorText}>{errors.email}</Text> : null}
-            </View>
-            
-            {/* Password Field */}
-            <View style={[styles.inputGroup, styles.fullWidthInput, { top: 450 }]}>
-              <TextInput
-                style={[styles.passwordInput, errors.password && styles.inputError]}
-                value={password}
-                onChangeText={setPassword}
-                onFocus={() => setPasswordFocused(true)}
-                onBlur={() => {
-                  setPasswordFocused(false);
-                  const passwordError = validatePassword(password);
-                  setErrors(prev => ({ ...prev, password: passwordError }));
-                }}
-                secureTextEntry={!showPassword}
-              />
-              <Text style={[
-                styles.floatingLabel,
-                shouldLabelFloat(passwordFocused, password) && styles.floatingLabelActive
-              ]}>Password</Text>
+          {/* Main Container */}
+          <View style={styles.mainContainer}>
+            {/* Tab Switcher */}
+            <View style={styles.tabContainer}>
               <TouchableOpacity
-                style={styles.eyeIcon}
-                onPress={() => setShowPassword(!showPassword)}
-              >
-                {showPassword ? (
-                  <EyeOff size={20} color={colors.text} />
-                ) : (
-                  <Eye size={20} color={colors.text} />
-                )}
-              </TouchableOpacity>
-              {errors.password ? <Text style={styles.errorText}>{errors.password}</Text> : null}
-            </View>
-            
-            {/* Confirm Password Field */}
-            <View style={[styles.inputGroup, styles.fullWidthInput, { top: 530 }]}>
-              <TextInput
-                style={[styles.passwordInput, errors.confirmPassword && styles.inputError]}
-                value={confirmPassword}
-                onChangeText={setConfirmPassword}
-                onFocus={() => setConfirmPasswordFocused(true)}
-                onBlur={() => {
-                  setConfirmPasswordFocused(false);
-                  const confirmPasswordError = validateConfirmPassword(confirmPassword, password);
-                  setErrors(prev => ({ ...prev, confirmPassword: confirmPasswordError }));
-                }}
-                secureTextEntry={!showConfirmPassword}
-              />
-              <Text style={[
-                styles.floatingLabel,
-                shouldLabelFloat(confirmPasswordFocused, confirmPassword) && styles.floatingLabelActive
-              ]}>Confirm Password</Text>
-              <TouchableOpacity
-                style={styles.eyeIcon}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-              >
-                {showConfirmPassword ? (
-                  <EyeOff size={20} color={colors.text} />
-                ) : (
-                  <Eye size={20} color={colors.text} />
-                )}
-              </TouchableOpacity>
-              {errors.confirmPassword ? <Text style={styles.errorText}>{errors.confirmPassword}</Text> : null}
-            </View>
-            
-            {/* Privacy Policy Agreement */}
-            <View style={styles.privacyContainer}>
-              <TouchableOpacity 
-                style={styles.checkboxContainer}
-                onPress={() => navigation.navigate('PrivacyPolicy', { 
-                  onAgree: () => setAcceptedTerms(true) 
-                })}
-                accessibilityLabel="Open privacy policy"
+                style={[
+                  styles.tab,
+                  styles.loginTab,
+                  activeTab === 'login' ? styles.activeTab : styles.inactiveTab
+                ]}
+                onPress={() => handleTabPress('login')}
+                accessibilityLabel="Login Tab"
                 accessibilityRole="button"
               >
-                <View style={[styles.checkbox, acceptedTerms && styles.checkboxChecked]}>
-                  {acceptedTerms && <Text style={styles.checkmark}>✓</Text>}
-                </View>
+                <Text style={[
+                  styles.tabText,
+                  activeTab === 'login' && styles.activeTabText
+                ]}>Login</Text>
               </TouchableOpacity>
-              <Text style={styles.privacyText}>
-                I agree with privacy and policy.
-              </Text>
+              <TouchableOpacity
+                style={[
+                  styles.tab,
+                  styles.signupTab,
+                  activeTab === 'signup' ? styles.activeTab : styles.inactiveTab
+                ]}
+                onPress={() => handleTabPress('signup')}
+                accessibilityLabel="Sign Up Tab"
+                accessibilityRole="button"
+              >
+                <Text style={[
+                  styles.tabText,
+                  activeTab === 'signup' && styles.activeTabText
+                ]}>Sign Up</Text>
+              </TouchableOpacity>
             </View>
-            
-            {/* Sign Up Button */}
-            <TouchableOpacity
-              style={styles.signUpButton}
-              onPress={handleSignUp}
-              disabled={isLoading}
-            >
-              <Text style={styles.signUpButtonText}>Sign Up</Text>
-            </TouchableOpacity>
-            
+
+            {/* Sign Up Card */}
+            <View style={styles.signUpCard}>
+              {/* Header */}
+              <View style={styles.cardHeader}>
+                <Text style={styles.welcomeTitle}>Create Account</Text>
+                <Text style={styles.welcomeSubtitle}>Join as a student to find your perfect college match</Text>
+              </View>
+
+              {/* Form Fields */}
+              <View style={styles.formSection}>
+                {/* Full Name Field */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Full Name (First Name, M.I., Last Name)</Text>
+                  <TextInput
+                    style={[
+                      styles.textInput,
+                      errors.fullName && styles.inputError
+                    ]}
+                    value={fullName}
+                    onChangeText={setFullName}
+                    onBlur={() => {
+                      const fullNameError = fullName.trim() ? '' : 'Full name is required';
+                      setErrors(prev => ({ ...prev, fullName: fullNameError }));
+                    }}
+                    placeholder="Enter your full name"
+                    placeholderTextColor={colors.textSecondary}
+                    autoCorrect={false}
+                    accessibilityLabel="Full name input"
+                  />
+                  {errors.fullName && <Text style={styles.errorText}>{errors.fullName}</Text>}
+                </View>
+
+                {/* Email Field */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Email</Text>
+                  <TextInput
+                    style={[
+                      styles.textInput,
+                      errors.email && styles.inputError
+                    ]}
+                    value={email}
+                    onChangeText={setEmail}
+                    onBlur={() => {
+                      const emailError = validateEmail(email);
+                      setErrors(prev => ({ ...prev, email: emailError }));
+                    }}
+                    placeholder="Enter your email"
+                    placeholderTextColor={colors.textSecondary}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    accessibilityLabel="Email input"
+                  />
+                  {errors.email && <Text style={styles.errorText}>{errors.email}</Text>}
+                </View>
+
+                {/* Password Field */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Password</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={[
+                        styles.passwordInput,
+                        errors.password && styles.inputError
+                      ]}
+                      value={password}
+                      onChangeText={setPassword}
+                      onBlur={() => {
+                        const passwordError = validatePassword(password);
+                        setErrors(prev => ({ ...prev, password: passwordError }));
+                      }}
+                      placeholder="Create a password"
+                      placeholderTextColor={colors.textSecondary}
+                      secureTextEntry={!showPassword}
+                      accessibilityLabel="Password input"
+                    />
+                    <TouchableOpacity
+                      style={styles.eyeIcon}
+                      onPress={() => setShowPassword(!showPassword)}
+                      accessibilityLabel={showPassword ? "Hide password" : "Show password"}
+                      accessibilityRole="button"
+                    >
+                      {showPassword ? (
+                        <EyeOff size={20} color={colors.textSecondary} />
+                      ) : (
+                        <Eye size={20} color={colors.textSecondary} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                  {errors.password && <Text style={styles.errorText}>{errors.password}</Text>}
+                </View>
+
+                {/* Confirm Password Field */}
+                <View style={styles.inputGroup}>
+                  <Text style={styles.inputLabel}>Confirm Password</Text>
+                  <View style={styles.passwordContainer}>
+                    <TextInput
+                      style={[
+                        styles.passwordInput,
+                        errors.confirmPassword && styles.inputError
+                      ]}
+                      value={confirmPassword}
+                      onChangeText={setConfirmPassword}
+                      onBlur={() => {
+                        const confirmPasswordError = validateConfirmPassword(confirmPassword, password);
+                        setErrors(prev => ({ ...prev, confirmPassword: confirmPasswordError }));
+                      }}
+                      placeholder="Re-enter password"
+                      placeholderTextColor={colors.textSecondary}
+                      secureTextEntry={!showConfirmPassword}
+                      accessibilityLabel="Confirm password input"
+                    />
+                    <TouchableOpacity
+                      style={styles.eyeIcon}
+                      onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                      accessibilityLabel={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                      accessibilityRole="button"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff size={20} color={colors.textSecondary} />
+                      ) : (
+                        <Eye size={20} color={colors.textSecondary} />
+                      )}
+                    </TouchableOpacity>
+                  </View>
+                  {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword}</Text>}
+                </View>
+
+                {/* Create Account Button */}
+                <TouchableOpacity
+                  style={[styles.signUpButton, isLoading && styles.signUpButtonDisabled]}
+                  onPress={handleSignUp}
+                  disabled={isLoading}
+                  accessibilityLabel="Create Account"
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.signUpButtonText}>CREATE ACCOUNT</Text>
+                </TouchableOpacity>
+              </View>
             </View>
           </View>
-        
-        {/* Footer - positioned absolutely */}
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>Already have an account? </Text>
-          <TouchableOpacity onPress={handleSignInPress}>
-            <Text style={styles.footerLink}>Sign In</Text>
-          </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -347,226 +348,218 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   content: {
     flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    paddingHorizontal: 24,
+    paddingTop: 120,
+  },
+  logo: {
+    position: 'absolute',
+    top: 30,
+    alignSelf: 'center',
+    width: 60,
+    height: 60,
+    zIndex: 1,
+  },
+  mainContainer: {
+    width: 345,
+    height: 544,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  // Tab Switcher Styles
+  tabContainer: {
+    width: 345,
+    height: 36,
+    backgroundColor: colors.backgroundSecondary,
+    borderRadius: 16,
+    flexDirection: 'row',
     position: 'relative',
   },
-  // Header with icon background
-  headerContainer: {
-    position: 'absolute',
-    width: 390,
-    height: 220,
-    left: 0,
-    top: 0,
-    backgroundColor: colors.backgroundSecondary,
-    borderBottomRightRadius: 30,
-    borderBottomLeftRadius: 30,
-    alignItems: 'center',
+  tab: {
+    width: 169.63,
+    height: 29.46,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 16,
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: colors.border,
-  },
-  headerIcon: {
-    width: 120,
-    height: 120,
-  },
-  // Sign Up title positioned with more space below red header
-  title: {
+    alignItems: 'center',
     position: 'absolute',
-    width: 181.34,
-    height: 50.54,
-    left: 104.33,
-    top: 240,
+    top: 3.47,
+  },
+  loginTab: {
+    left: 2.98,
+  },
+  signupTab: {
+    left: 172.62,
+  },
+  activeTab: {
+    backgroundColor: colors.backgroundTertiary,
+    borderWidth: 1.26,
+    borderColor: 'rgba(0, 0, 0, 0)',
+    shadowColor: colors.gray?.[300] || colors.border,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  inactiveTab: {
+    backgroundColor: 'transparent',
+    borderWidth: 1.26,
+    borderColor: 'rgba(0, 0, 0, 0)',
+  },
+  tabText: {
     textAlign: 'center',
     color: colors.text,
-    fontSize: 40,
-    fontFamily: 'Inter',
-    fontWeight: '700',
-    zIndex: 10, // Ensure title appears above other elements
+    fontSize: 14,
+    fontFamily: 'Arimo',
+    fontWeight: '400',
+    lineHeight: 20,
   },
-  formContainer: {
-    position: 'relative',
+  activeTabText: {
+    color: colors.text,
+  },
+  // Sign Up Card Styles
+  signUpCard: {
+    width: 345,
+    flex: 1,
+    backgroundColor: colors.surface,
+    borderRadius: 16,
+    borderWidth: 1.26,
+    borderColor: colors.border,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    paddingHorizontal: 24,
+    paddingVertical: 24,
+    gap: 24,
+  },
+  // Card Header
+  cardHeader: {
     width: '100%',
-    height: '100%',
+    height: 99,
   },
-  // Name fields row - positioned below title with proper spacing
-  nameRow: {
-    position: 'absolute',
-    top: 300,
-    left: 25,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: 340,
+  welcomeTitle: {
+    color: colors.text,
+    fontSize: 18,
+    fontFamily: 'Poppins',
+    fontWeight: '700',
+    lineHeight: 18,
+    marginBottom: 8,
+  },
+  welcomeSubtitle: {
+    width: 279,
+    color: colors.textSecondary,
+    fontSize: 16,
+    fontFamily: 'Inter',
+    fontWeight: '400',
+    lineHeight: 26,
+  },
+  // Form Section
+  formSection: {
+    width: '100%',
+    height: 376,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 16,
   },
   inputGroup: {
-    position: 'relative',
-    width: 161.87,
-  },
-  fullWidthInput: {
-    position: 'absolute',
-    left: 25,
-    width: 340,
-    top: 370,
-  },
-  nameInput: {
     width: '100%',
-    height: 52,
-    fontSize: 14,
+    height: 58,
+    flexDirection: 'column',
+    justifyContent: 'flex-start',
+    alignItems: 'flex-start',
+    gap: 8,
+  },
+  inputLabel: {
     color: colors.text,
-    paddingHorizontal: 12,
-    paddingTop: 8,
-    backgroundColor: colors.backgroundSecondary,
-    borderRadius: 12,
-    borderWidth: 1.2,
-    borderColor: 'transparent',
+    fontSize: 14,
+    fontFamily: 'Arimo',
+    fontWeight: '400',
+    lineHeight: 14,
   },
   textInput: {
     width: '100%',
-    height: 52,
-    fontSize: 14,
-    color: colors.text,
+    height: 36,
     paddingHorizontal: 12,
-    paddingTop: 8,
-    backgroundColor: colors.backgroundSecondary,
-    borderRadius: 12,
-    borderWidth: 1.2,
-    borderColor: 'transparent',
+    paddingVertical: 4,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    borderWidth: 1.26,
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    fontWeight: '400',
+    color: colors.text,
+  },
+  passwordContainer: {
+    width: '100%',
+    position: 'relative',
   },
   passwordInput: {
     width: '100%',
-    height: 52,
-    fontSize: 14,
-    color: colors.text,
+    height: 36,
     paddingHorizontal: 12,
-    paddingTop: 8,
-    backgroundColor: colors.backgroundSecondary,
-    borderRadius: 12,
-    borderWidth: 1.2,
-    borderColor: 'transparent',
-    paddingRight: 45, // Make room for eye icon
+    paddingVertical: 4,
+    paddingRight: 40,
+    backgroundColor: colors.surface,
+    borderRadius: 10,
+    borderWidth: 1.26,
+    borderColor: 'rgba(0, 0, 0, 0.23)',
+    fontSize: 16,
+    fontFamily: 'Arimo',
+    fontWeight: '400',
+    color: colors.text,
   },
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: colors.error,
     borderWidth: 2,
   },
   errorText: {
-    position: 'absolute',
-    bottom: -22,
-    left: 0,
     fontSize: 12,
-    color: '#EF4444',
+    color: colors.error,
     fontFamily: 'Inter',
     fontWeight: '400',
-    zIndex: 10,
-  },
-  floatingLabel: {
+    marginTop: 4,
     position: 'absolute',
-    left: 12,
-    top: 16,
-    fontSize: 14,
-    color: colors.text,
-    backgroundColor: 'transparent',
-    paddingHorizontal: 4,
-    zIndex: 1,
-    pointerEvents: 'none',
+    bottom: -20,
   },
-  floatingLabelActive: {
-    top: -8,
-    fontSize: 12,
-    color: colors.text,
-    backgroundColor: colors.background,
-    borderRadius: 5,
-  },
-  // Eye icon positioned exactly as in Figma
   eyeIcon: {
     position: 'absolute',
+    right: 12,
+    top: 8,
     width: 20,
     height: 20,
-    right: 15,
-    top: 16,
-    zIndex: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
-  // Sign Up button
+  // Sign Up Button
   signUpButton: {
-    position: 'absolute',
-    width: 340,
-    left: 25,
-    top: 645,
-    padding: 16,
-    backgroundColor: '#2A71D0',
-    borderRadius: 12,
+    width: '100%',
+    height: 36,
+    backgroundColor: colors.primary,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    position: 'relative',
+  },
+  signUpButtonDisabled: {
+    opacity: 0.6,
   },
   signUpButtonText: {
     textAlign: 'center',
-    color: 'white',
+    color: colors.white,
     fontSize: 14,
     fontFamily: 'Inter',
-    fontWeight: '600',
+    fontWeight: '500',
+    textTransform: 'uppercase',
     lineHeight: 20,
-  },
-  // Footer - positioned absolutely at bottom
-  footer: {
-    position: 'absolute',
-    bottom: 30,
-    left: 0,
-    right: 0,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-  },
-  footerText: {
-    textAlign: 'center',
-    color: colors.text,
-    fontSize: 14,
-    fontFamily: 'Inter',
-    fontWeight: '400',
-  },
-  footerLink: {
-    textAlign: 'center',
-    color: '#2A71D0',
-    fontSize: 14,
-    fontFamily: 'Inter',
-    fontWeight: '400',
-  },
-  // Privacy Policy Agreement
-  privacyContainer: {
-    position: 'absolute',
-    left: 25,
-    top: 605,
-    width: 340,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  checkboxContainer: {
-    marginRight: 12,
-  },
-  checkbox: {
-    width: 20,
-    height: 20,
-    borderWidth: 2,
-    borderColor: colors.border,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.background,
-  },
-  checkboxChecked: {
-    backgroundColor: '#2A71D0',
-    borderColor: '#2A71D0',
-  },
-  checkmark: {
-    color: 'white',
-    fontSize: 12,
-    fontWeight: 'bold',
-  },
-  privacyText: {
-    fontSize: 14,
-    color: colors.text,
-    fontFamily: 'Inter',
-    fontWeight: '400',
+    letterSpacing: 0.35,
   },
 });

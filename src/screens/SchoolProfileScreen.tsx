@@ -76,48 +76,82 @@ const mockSchoolData: SchoolProfileData = {
   description: 'Stanford University is a private research university in Stanford, California. Known for its academic strength, wealth, proximity to Silicon Valley, and ranking as one of the world\'s top universities.',
   ranking: '#3 in National Universities',
   type: 'Private',
-  studentCount: '17,000+',
+  studentCount: '18,000+',
   acceptanceRate: '4.3%',
   programCategories: [
     {
       id: '1',
-      name: 'Engineering',
+      name: 'College of IT & Engineering',
       isExpanded: false,
       programs: [
-        { id: '1', name: 'Computer Science', duration: '4 years', degree: 'Bachelor of Science' },
-        { id: '2', name: 'Electrical Engineering', duration: '4 years', degree: 'Bachelor of Science' },
-        { id: '3', name: 'Mechanical Engineering', duration: '4 years', degree: 'Bachelor of Science' },
-        { id: '4', name: 'Bioengineering', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '1', name: 'Information Technology', duration: '4 years', degree: 'Bachelor of Science' },
       ],
     },
     {
       id: '2',
-      name: 'Business',
+      name: 'School of Health & Allied Health Sciences',
       isExpanded: false,
       programs: [
-        { id: '5', name: 'Business Administration', duration: '2 years', degree: 'Master of Business Administration' },
-        { id: '6', name: 'Finance', duration: '4 years', degree: 'Bachelor of Science' },
-        { id: '7', name: 'Economics', duration: '4 years', degree: 'Bachelor of Arts' },
+        { id: '2', name: 'Nursing', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '3', name: 'Medical Technology', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '4', name: 'Pharmacy', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '5', name: 'Radiologic Technology', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '6', name: 'Optometry', duration: '5 years', degree: 'Doctor of Optometry' },
       ],
     },
     {
       id: '3',
-      name: 'Medicine',
+      name: 'School of Design + Communication',
       isExpanded: false,
       programs: [
-        { id: '8', name: 'Medicine', duration: '4 years', degree: 'Doctor of Medicine' },
-        { id: '9', name: 'Biomedical Sciences', duration: '4 years', degree: 'Bachelor of Science' },
-        { id: '10', name: 'Public Health', duration: '2 years', degree: 'Master of Public Health' },
+        { id: '7', name: 'Fine Arts Program with Focus on Animation and Visual Communication', duration: '4 years', degree: 'Bachelor of Arts' },
+        { id: '8', name: 'Architecture', duration: '5 years', degree: 'Bachelor of Science' },
+        { id: '9', name: 'Communication', duration: '4 years', degree: 'Bachelor of Arts' },
       ],
     },
     {
       id: '4',
-      name: 'Liberal Arts',
+      name: 'College of Dentistry',
       isExpanded: false,
       programs: [
-        { id: '11', name: 'Psychology', duration: '4 years', degree: 'Bachelor of Arts' },
-        { id: '12', name: 'English Literature', duration: '4 years', degree: 'Bachelor of Arts' },
-        { id: '13', name: 'History', duration: '4 years', degree: 'Bachelor of Arts' },
+        { id: '10', name: 'Dental Medicine', duration: '6 years', degree: 'Doctor of Dental Medicine' },
+      ],
+    },
+    {
+      id: '5',
+      name: 'College of Rehabilitative Sciences',
+      isExpanded: false,
+      programs: [
+        { id: '11', name: 'Physical Therapy', duration: '5 years', degree: 'Bachelor of Science' },
+        { id: '12', name: 'Occupational Therapy', duration: '5 years', degree: 'Bachelor of Science' },
+      ],
+    },
+    {
+      id: '6',
+      name: 'College of Veterinary Medicine',
+      isExpanded: false,
+      programs: [
+        { id: '13', name: 'Veterinary Medicine', duration: '6 years', degree: 'Doctor of Veterinary Medicine' },
+      ],
+    },
+    {
+      id: '7',
+      name: 'Business School',
+      isExpanded: false,
+      programs: [
+        { id: '14', name: 'Business Administration major in Marketing Management', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '15', name: 'Business Administration major in Financial Management', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '16', name: 'Accountancy', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '17', name: 'Hotel and Restaurant Management', duration: '4 years', degree: 'Bachelor of Science' },
+      ],
+    },
+    {
+      id: '8',
+      name: 'College of Pre-Medicine',
+      isExpanded: false,
+      programs: [
+        { id: '18', name: 'Psychology', duration: '4 years', degree: 'Bachelor of Science' },
+        { id: '19', name: 'Biology', duration: '4 years', degree: 'Bachelor of Science' },
       ],
     },
   ],
@@ -137,8 +171,9 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
   const navigation = useNavigation<SchoolProfileScreenNavigationProp>();
   const schoolData = route?.params?.schoolData || mockSchoolData;
   const insets = useSafeAreaInsets();
+  // Always use the complete program data from mockSchoolData for SWU PHINMA
   const [programCategories, setProgramCategories] = useState<ProgramCategory[]>(
-    schoolData.programCategories
+    mockSchoolData.programCategories
   );
 
   const toggleProgramCategory = (categoryId: string) => {
@@ -230,13 +265,13 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
         {/* Banner and Logo Section */}
         <View style={styles.bannerSection}>
           <Image
-            source={require('../../assets/images/icon.png')}
+            source={require('../../assets/images/swu phinma hall.png')}
             style={styles.bannerImage}
             resizeMode="cover"
           />
           <View style={styles.logoContainer}>
             <Image
-              source={require('../../assets/images/icon.png')}
+              source={require('../../assets/images/swu logo.png')}
               style={styles.logoImage}
               resizeMode="cover"
             />
@@ -258,11 +293,7 @@ export const SchoolProfileScreen: React.FC<SchoolProfileScreenProps> = ({
         {/* Quick Stats */}
         <View style={styles.statsSection}>
           <View style={styles.statItem}>
-            <Text style={styles.statValue}>-</Text>
-            <Text style={styles.statLabel}>Ranking</Text>
-          </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statValue}>-</Text>
+            <Text style={styles.statValue}>{schoolData.studentCount}</Text>
             <Text style={styles.statLabel}>Students</Text>
           </View>
           <View style={styles.statItem}>

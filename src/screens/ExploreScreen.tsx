@@ -75,27 +75,9 @@ export default function ExploreScreen() {
   const [universities] = useState<University[]>([
     {
       id: "1",
-      name: "Southwestern University",
+      name: "Southwestern University PHINMA",
       address: "Urgello, Cebu",
       tuition: "₱80,000/year",
-    },
-    {
-      id: "2",
-      name: "University of Cebu",
-      address: "Sancianko St, Cebu",
-      tuition: "₱70,000/year",
-    },
-    {
-      id: "3",
-      name: "University of Visayas",
-      address: "Colon St, Cebu",
-      tuition: "₱60,000/year",
-    },
-    {
-      id: "4",
-      name: "University of San Carlos",
-      address: "Sitio Nasipit, Cebu",
-      tuition: "₱100,000/year",
     },
   ]);
 
@@ -129,30 +111,31 @@ export default function ExploreScreen() {
         description: `${university.name} is a prestigious institution offering world-class education and research opportunities.`,
         ranking: '#25 in National Universities',
         founded: '1901',
-        studentCount: '15,000+',
+        studentCount: '18,000+',
         acceptanceRate: '15%',
+        type: 'Private',
         programCategories: [
           {
             id: '1',
-            name: 'Engineering',
+            name: 'College of IT & Engineering',
             isExpanded: false,
             programs: [
-              { id: '1', name: 'Computer Science', duration: '4 years', degree: 'Bachelor of Science' },
-              { id: '2', name: 'Electrical Engineering', duration: '4 years', degree: 'Bachelor of Science' },
+              { id: '1', name: 'Information Technology', duration: '4 years', degree: 'Bachelor of Science' },
             ],
           },
           {
             id: '2',
-            name: 'Business',
+            name: 'Business School',
             isExpanded: false,
             programs: [
-              { id: '3', name: 'Business Administration', duration: '2 years', degree: 'Master of Business Administration' },
+              { id: '2', name: 'Business Administration major in Marketing Management', duration: '4 years', degree: 'Bachelor of Science' },
+              { id: '3', name: 'Accountancy', duration: '4 years', degree: 'Bachelor of Science' },
             ],
           },
         ],
         gallery: [
-          'https://via.placeholder.com/300x200/4285F4/FFFFFF?text=Campus+1',
-          'https://via.placeholder.com/300x200/34A853/FFFFFF?text=Campus+2',
+          require('../../assets/images/swu phinma hall.png'),
+          require('../../assets/images/swu phinma hall.png'),
         ],
       },
     });
@@ -342,7 +325,7 @@ export default function ExploreScreen() {
                 {/* University Logo */}
                 <View style={styles.logoContainer}>
                   <Image 
-                    source={require('../../assets/images/logomark.png')}
+                    source={require('../../assets/images/swu logo.png')}
                     style={styles.universityLogo}
                     resizeMode="contain"
                   />
@@ -546,6 +529,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   universityLogo: {
     width: 40,
     height: 40,
+    borderRadius: 20,
   },
   universityContent: {
     flex: 1,

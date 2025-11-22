@@ -1,29 +1,29 @@
 import { useNavigation } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import {
-    AlertTriangle,
-    Bell,
-    BookOpen,
-    ChevronRight,
-    Edit3,
-    GraduationCap,
-    LogOut,
-    MapPin,
-    MessageCircle,
-    Settings,
-    User,
-    Wallet
+  AlertTriangle,
+  Bell,
+  BookOpen,
+  ChevronRight,
+  Edit3,
+  GraduationCap,
+  LogOut,
+  MapPin,
+  MessageCircle,
+  Settings,
+  User,
+  Wallet
 } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
-    Image,
-    Modal,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View
 } from "react-native";
 import { useAuth } from '../context/AuthContext';
 import { useFavorites, type FavoriteUniversity } from '../context/FavoritesContext';
@@ -437,14 +437,14 @@ export default function ProfileScreen() {
         {/* Profile Card */}
         <View style={styles.profileCard}>
           <LinearGradient
-            colors={['#2A71D0', '#1E40AF']}
+            colors={[`${colors.primary}20`, `${colors.primary}10`]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
             style={styles.profileGradient}
           >
             <View style={styles.avatarContainer}>
               <View style={styles.avatarPlaceholder}>
-                <User size={40} color="#9CA3AF" />
+                <User size={40} color={colors.primary} />
               </View>
             </View>
             <View style={styles.profileInfo}>
@@ -661,13 +661,15 @@ const createStyles = (colors: any) => StyleSheet.create({
     marginHorizontal: 16,
     borderRadius: 16,
     marginBottom: 24,
-    borderWidth: 1.26,
-    borderColor: "#E5E7EB",
+    borderWidth: 1,
+    borderColor: `${colors.primary}30`,
     overflow: 'hidden',
+    backgroundColor: `${colors.surface}E6`,
   },
   profileGradient: {
     padding: 24,
     alignItems: "center",
+    backgroundColor: 'transparent',
   },
   avatarContainer: {
     marginBottom: 16,
@@ -676,9 +678,11 @@ const createStyles = (colors: any) => StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "rgba(255, 255, 255, 0.20)",
+    backgroundColor: `${colors.backgroundSecondary}80`,
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: `${colors.primary}40`,
   },
 
   profileInfo: {
@@ -688,7 +692,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 20,
     fontFamily: "Arimo",
     fontWeight: "700",
-    color: "#ffffff",
+    color: colors.text,
     lineHeight: 28,
     marginBottom: 4,
   },
@@ -696,7 +700,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     fontSize: 14,
     fontFamily: "Arimo",
     fontWeight: "400",
-    color: "rgba(255, 255, 255, 0.80)",
+    color: colors.textSecondary,
     lineHeight: 20,
   },
   section: {
