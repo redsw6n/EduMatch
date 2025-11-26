@@ -34,9 +34,9 @@ const ApplicationTimelineScreen: React.FC<ApplicationTimelineScreenProps> = ({
   // This would come from route params or API
   const applicationData = route?.params?.applicationData || {
     id: 'APP-2024-001',
-    universityName: 'Southwestern University',
-    program: 'Computer Science',
-    campus: 'Main Campus',
+    universityName: 'Southwestern University PHINMA',
+    program: 'Information Technology',
+    campus: 'Urgello Campus',
     startTerm: 'A.Y 2024-2025',
     status: 'in-review'
   };

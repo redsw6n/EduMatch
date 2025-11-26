@@ -103,7 +103,7 @@ export const PrivacyPolicyScreen: React.FC<PrivacyPolicyScreenProps> = ({
         accessibilityLabel="Go back"
         accessibilityRole="button"
       >
-        <ChevronLeft size={24} color={colors.textInverse} />
+        <ChevronLeft size={24} color="white" />
       </TouchableOpacity>
 
       {/* Title */}
@@ -201,7 +201,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     height: 844,
     left: 0,
     top: 0,
-    backgroundColor: colors.backgroundSecondary,
+    backgroundColor: '#1B1B1B',
   },
   backButton: {
     position: 'absolute',
@@ -220,7 +220,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     left: 43,
     top: 108,
     textAlign: 'center',
-    color: colors.textInverse,
+    color: 'white',
     fontSize: 40,
     fontFamily: 'Inter',
     fontWeight: '700',
@@ -234,7 +234,7 @@ const createStyles = (colors: any) => StyleSheet.create({
     top: 180,
     width: 340,
     height: 556,
-    backgroundColor: colors.surface,
+    backgroundColor: '#F3F2F2',
     borderRadius: 8,
   },
   scrollbarTrack: {
@@ -243,13 +243,13 @@ const createStyles = (colors: any) => StyleSheet.create({
     top: 12,
     width: 6,
     height: 532,
-    backgroundColor: colors.border,
+    backgroundColor: '#D9D9D9',
     borderRadius: 4,
   },
   scrollbarThumb: {
     width: 6,
     height: 112.38,
-    backgroundColor: colors.textSecondary,
+    backgroundColor: '#4C4C4C',
     borderRadius: 4,
   },
   scrollContent: {
@@ -288,7 +288,7 @@ const createStyles = (colors: any) => StyleSheet.create({
   },
   agreeButtonText: {
     textAlign: 'center',
-    color: colors.textInverse,
+    color: 'white',
     fontSize: 14,
     fontFamily: 'Inter',
     fontWeight: '600',

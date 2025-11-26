@@ -12,6 +12,14 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemedColors } from '../hooks/useThemedColors';
+import { 
+  APPLICATION_REQUIREMENTS, 
+  getFormattedProgramsList, 
+  SCHOOL_POPULATION, 
+  STUDENT_LIFE_INFO,
+  searchPrograms,
+  getProgramsByCategory
+} from '../utils/chatbotData';
 
 interface AIChatbotScreenProps {
   navigation?: any;
@@ -34,7 +42,7 @@ const AIChatbotScreen: React.FC<AIChatbotScreenProps> = ({ navigation }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: '1',
-      text: 'Hello! I\'m your AI assistant for EduMatch. I can help you find universities, answer questions about programs, and guide you through the application process. How can I help you today?',
+      text: 'Hello! I\'m your AI assistant for EduMatch. I specialize in helping you with:\n\n🎯 **My Expertise Areas:**\n• **Application Requirements** - what documents you need to apply\n• **School Population** - student counts and campus demographics  \n• **Available Programs** - complete listings of degree programs\n\nPlus university searches, program guidance, and application support. What would you like to know?',
       isUser: false,
       timestamp: new Date(),
     },
@@ -80,17 +88,145 @@ const AIChatbotScreen: React.FC<AIChatbotScreenProps> = ({ navigation }) => {
   const generateAIResponse = (userMessage: string): string => {
     const lowerMessage = userMessage.toLowerCase();
     
-    // Simple keyword-based responses
+    // Application Requirements responses
+    if (lowerMessage.includes('application requirement') || 
+        lowerMessage.includes('admission requirement') || 
+        lowerMessage.includes('what do i need to apply') ||
+        lowerMessage.includes('documents needed') ||
+        lowerMessage.includes('requirements for application')) {
+      let response = 'Here are the complete application requirements:\n\n📋 **Required Documents:**\n';
+      
+      APPLICATION_REQUIREMENTS.documents.forEach(doc => {
+        response += `• ${doc.name} - ${doc.description}\n`;
+      });
+      
+      response += '\n📝 **Personal Information Required:**\n';
+      APPLICATION_REQUIREMENTS.personalInfo.forEach(info => {
+        response += `• ${info}\n`;
+      });
+      
+      response += '\n⏰ **Application Timeline:**\n';
+      APPLICATION_REQUIREMENTS.deadlines.forEach(deadline => {
+        response += `• ${deadline}\n`;
+      });
+      
+      response += '\n🚀 **Process Steps:**\n';
+      APPLICATION_REQUIREMENTS.process.forEach((step, index) => {
+        response += `${index + 1}. ${step}\n`;
+      });
+      
+      response += '\nYou can start your application directly through EduMatch! Would you like help with any specific requirement?';
+      return response;
+    }
+
+    // School Population responses  
+    if (lowerMessage.includes('population') || 
+        lowerMessage.includes('student count') || 
+        lowerMessage.includes('how many students') ||
+        lowerMessage.includes('enrollment') ||
+        lowerMessage.includes('class size')) {
+      let response = `👥 **School Population Information:**\n\n**${SCHOOL_POPULATION.name}:**\n`;
+      response += `• Total Students: ${SCHOOL_POPULATION.totalStudents}\n`;
+      response += `• Established: ${SCHOOL_POPULATION.establishedYear}\n`;
+      response += `• Type: ${SCHOOL_POPULATION.type}\n`;
+      response += `• Address: ${SCHOOL_POPULATION.address}\n\n`;
+      
+      response += 'Would you like to know more about our programs or application process?';
+      return response;
+    }
+
+    // Available Programs responses
+    if (lowerMessage.includes('available program') || 
+        lowerMessage.includes('programs offered') || 
+        lowerMessage.includes('courses available') ||
+        lowerMessage.includes('what programs') ||
+        lowerMessage.includes('list of programs') ||
+        lowerMessage.includes('degree programs') ||
+        (lowerMessage.includes('program') && (lowerMessage.includes('list') || lowerMessage.includes('all')))) {
+      return getFormattedProgramsList();
+    }
+
+    // Specific program category searches
+    if (lowerMessage.includes('business program') || lowerMessage.includes('business course')) {
+      const businessPrograms = getProgramsByCategory('Business');
+      let response = '💼 **Business Programs Available:**\n\n';
+      businessPrograms.forEach(program => {
+        response += `• **${program.name}**\n  Duration: ${program.duration} | Degree: ${program.degree}\n\n`;
+      });
+      response += 'All business programs include internships and industry partnerships. Would you like details about any specific program?';
+      return response;
+    }
+
+    if (lowerMessage.includes('health program') || lowerMessage.includes('medical program') || lowerMessage.includes('nursing')) {
+      const healthPrograms = getProgramsByCategory('Health & Allied Sciences');
+      const specializedHealth = getProgramsByCategory('Specialized Health');
+      
+      let response = '🏥 **Health & Medical Programs Available:**\n\n';
+      response += '**Health & Allied Sciences:**\n';
+      healthPrograms.forEach(program => {
+        response += `• ${program.name} (${program.duration})\n`;
+      });
+      
+      response += '\n**Specialized Health Programs:**\n';
+      specializedHealth.forEach(program => {
+        response += `• ${program.name} (${program.duration})\n`;
+      });
+      
+      response += '\nAll health programs include clinical training and board exam preparation. Which health field interests you most?';
+      return response;
+    }
+
+    if (lowerMessage.includes('it program') || lowerMessage.includes('engineering') || lowerMessage.includes('technology program')) {
+      const itPrograms = getProgramsByCategory('IT & Engineering');
+      let response = '💻 **IT & Engineering Programs:**\n\n';
+      itPrograms.forEach(program => {
+        response += `• **${program.name}**\n  Duration: ${program.duration} | Degree: ${program.degree}\n\n`;
+      });
+      response += 'These programs include hands-on labs and industry partnerships. Would you like more details about any specific program?';
+      return response;
+    }
+
+    // Program search functionality
+    if (lowerMessage.includes('search') && (lowerMessage.includes('program') || lowerMessage.includes('course'))) {
+      return 'I can help you search for programs! Try asking:\n\n🔍 **Search Examples:**\n• "Show me business programs"\n• "What health programs are available?"\n• "IT and engineering programs"\n• "Psychology programs"\n\nOr ask about specific programs like:\n• "Tell me about nursing"\n• "Information about IT program"\n• "Architecture program details"\n\nWhat type of program are you looking for?';
+    }
+
+    // Campus information
+    if (lowerMessage.includes('campus') || lowerMessage.includes('location')) {
+      let response = `🏫 **Campus Information:**\n\n**${SCHOOL_POPULATION.name}** has multiple campuses:\n\n`;
+      SCHOOL_POPULATION.campuses.forEach((campus, index) => {
+        response += `${index + 1}. ${campus}\n`;
+      });
+      
+      response += '\n🌟 **Campus Features:**\n';
+      response += '• Modern facilities and laboratories\n';
+      response += '• Library and research centers\n';
+      response += '• Sports and recreational areas\n';
+      response += '• Student housing options (select campuses)\n';
+      response += '• Dining and commercial areas\n';
+      
+      response += '\nEach campus offers a full range of student services. Would you like information about a specific campus?';
+      return response;
+    }
+
+    // Admission and acceptance rates
+    if (lowerMessage.includes('acceptance rate') || lowerMessage.includes('admission rate') || lowerMessage.includes('how hard to get in')) {
+      return `📊 **Admission Information:**\n\n**${SCHOOL_POPULATION.name}:**\n• Acceptance Rate: ${SCHOOL_POPULATION.acceptanceRate}\n• Competitive but fair admission process\n• Holistic evaluation of applicants\n\n🎯 **Admission Factors:**\n• Academic performance (GPA/grades)\n• Completeness of application documents\n• Program-specific requirements\n• Application timing (earlier is better)\n\n💡 **Tips to Improve Your Chances:**\n• Submit complete, accurate documents\n• Apply early in the application period\n• Meet all program prerequisites\n• Write a compelling academic goals statement\n\nReady to start your application? I can guide you through the requirements!`;
+    }
+
+    // Enhanced program-specific responses
+    if (lowerMessage.includes('program') || lowerMessage.includes('course') || lowerMessage.includes('major')) {
+      return 'I can help you explore our program offerings! We have programs in:\n\n🔹 IT & Engineering (Information Technology, Architecture, Communication)\n🔹 Health & Allied Sciences (Nursing, Medical Technology, Pharmacy, etc.)\n🔹 Specialized Health (Dental Medicine, Veterinary Medicine)\n🔹 Business & Management (Marketing, Financial Management, Accountancy, etc.)\n🔹 Arts & Sciences (Fine Arts, Psychology, Biology)\n\nType "available programs" to see the complete list, or ask about a specific field like "business programs" or "health programs". What area interests you most?';
+    }
+    
+    // Enhanced application responses
+    if (lowerMessage.includes('application') || lowerMessage.includes('apply')) {
+      return 'I can guide you through the application process! 📝\n\n**Quick Start:**\n• Use EduMatch\'s built-in application system\n• All required documents can be uploaded directly\n• Real-time application tracking\n\n**Need specifics?** Ask me about:\n• "Application requirements" - for document lists\n• "How to apply" - for step-by-step guidance\n• "Application deadline" - for timing information\n\nReady to start your application journey?';
+    }
+    
+    // Simple keyword-based responses  
     if (lowerMessage.includes('university') || lowerMessage.includes('college') || lowerMessage.includes('school')) {
       return 'I can help you find universities that match your preferences! You can explore universities based on your location, budget, and program interests. Would you like me to suggest some universities based on your profile?';
-    }
-    
-    if (lowerMessage.includes('program') || lowerMessage.includes('course') || lowerMessage.includes('major')) {
-      return 'Great question about programs! Universities offer various programs like Engineering, Business, Arts, Health Sciences, and more. What field of study are you most interested in?';
-    }
-    
-    if (lowerMessage.includes('application') || lowerMessage.includes('apply')) {
-      return 'I can guide you through the application process! Most universities require transcripts, recommendation letters, and personal statements. You can track your applications right here in EduMatch. Do you need help with a specific part of the application?';
     }
     
     if (lowerMessage.includes('tuition') || lowerMessage.includes('cost') || lowerMessage.includes('fee')) {
@@ -102,15 +238,20 @@ const AIChatbotScreen: React.FC<AIChatbotScreenProps> = ({ navigation }) => {
     }
     
     if (lowerMessage.includes('hello') || lowerMessage.includes('hi') || lowerMessage.includes('hey')) {
-      return 'Hello! I\'m here to help you with your university search and application journey. Feel free to ask me anything about universities, programs, applications, or the EduMatch app!';
+      return 'Hello! I\'m here to help you with your university search and application journey. Feel free to ask me anything about:\n\n• **Application requirements** - what documents you need\n• **Available programs** - complete list of degree programs\n• **School population** - student count and campus info\n• Universities, applications, or the EduMatch app!\n\nWhat would you like to know?';
     }
     
     if (lowerMessage.includes('thank')) {
       return 'You\'re very welcome! I\'m always here to help with your educational journey. Is there anything else you\'d like to know about universities or applications?';
     }
+
+    // Quick help responses for specific areas
+    if (lowerMessage.includes('help') || lowerMessage.includes('what can you do')) {
+      return 'I\'m your EduMatch AI assistant! I can help with:\n\n🎯 **My Specialties:**\n• **Application Requirements** - documents & process details\n• **School Population** - student counts & campus info  \n• **Available Programs** - complete program listings\n• University searches & recommendations\n• Application guidance & tracking\n\n💬 **Try asking:**\n• "What are the application requirements?"\n• "Show me available programs"\n• "What\'s the school population?"\n\nWhat would you like to explore first?';
+    }
     
     // Default response
-    return 'That\'s an interesting question! While I\'m still learning, I can help you with university searches, program information, and application guidance. You can also explore the universities in the Explore tab or check your application status in the Applications section. Is there something specific about universities or applications I can help with?';
+    return 'That\'s an interesting question! I specialize in helping with:\n\n🔍 **Application Requirements** - documents needed to apply\n👥 **School Population** - student counts and campus demographics\n📚 **Available Programs** - complete list of degree programs\n\nPlus general university searches, program information, and application guidance. You can also explore universities in the Explore tab or check your application status in the Applications section.\n\nIs there something specific about applications, programs, or school information I can help with?';
   };
 
   const formatTime = (date: Date) => {

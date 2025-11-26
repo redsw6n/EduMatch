@@ -70,14 +70,14 @@ interface SchoolProfileScreenProps {
 // Mock data - this would come from props or API
 const mockSchoolData: SchoolProfileData = {
   id: '1',
-  name: 'Stanford University',
-  location: 'Stanford, California, USA',
-  tuitionRange: '$55,000 - $65,000 per year',
-  description: 'Stanford University is a private research university in Stanford, California. Known for its academic strength, wealth, proximity to Silicon Valley, and ranking as one of the world\'s top universities.',
-  ranking: '#3 in National Universities',
+  name: 'Southwestern University PHINMA',
+  location: 'Villa Aznar, Urgello Street, Cebu City, Philippines',
+  tuitionRange: '₱80,000 - ₱120,000 per year',
+  description: 'Southwestern University PHINMA is a prestigious private university in Cebu City, Philippines. Established in 1946, it is known for its excellence in education, comprehensive academic programs, and commitment to developing future leaders across various fields.',
+  ranking: '#1 in Cebu Private Universities',
   type: 'Private',
   studentCount: '18,000+',
-  acceptanceRate: '4.3%',
+  acceptanceRate: '15%',
   programCategories: [
     {
       id: '1',

@@ -31,15 +31,15 @@ const initialNotifications: Notification[] = [
     id: '1',
     type: 'application',
     title: 'Application Update',
-    message: 'Your application to Southwestern University has been reviewed',
+    message: 'Your application to Southwestern University PHINMA has been reviewed',
     timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
     isRead: false,
   },
   {
     id: '2',
     type: 'match',
-    title: 'New University Match',
-    message: 'We found 3 new universities that match your preferences!',
+    title: 'Program Match Found',
+    message: 'Your profile matches perfectly with SWU PHINMA programs!',
     timestamp: new Date(Date.now() - 5 * 60 * 60 * 1000), // 5 hours ago
     isRead: false,
   },
@@ -47,7 +47,7 @@ const initialNotifications: Notification[] = [
     id: '3',
     type: 'message',
     title: 'Message from Admissions',
-    message: 'University of Cebu sent you a message about your application',
+    message: 'Southwestern University PHINMA sent you a message about your application',
     timestamp: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000), // 1 day ago
     isRead: true,
   },
@@ -55,7 +55,7 @@ const initialNotifications: Notification[] = [
     id: '4',
     type: 'reminder',
     title: 'Application Deadline',
-    message: 'Reminder: Your application to University of San Carlos is due in 3 days',
+    message: 'Reminder: Your application to Southwestern University PHINMA is due in 3 days',
     timestamp: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000), // 2 days ago
     isRead: false,
   },
@@ -63,7 +63,7 @@ const initialNotifications: Notification[] = [
     id: '5',
     type: 'system',
     title: 'Profile Completion',
-    message: 'Complete your academic background to get better university matches',
+    message: 'Complete your academic background to get better program matches at SWU PHINMA',
     timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
     isRead: true,
   },
