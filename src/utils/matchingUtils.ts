@@ -22,7 +22,7 @@ const MATCH_WEIGHTS = {
 };
 
 // Minimum match score threshold
-const MIN_MATCH_SCORE = 50;
+const MIN_MATCH_SCORE = 30;
 
 /**
  * Calculate match score between user profile and university
@@ -39,22 +39,46 @@ export const calculateMatchScore = (
 
   // Course matching
   if (preferences.course && university.programs.length > 0) {
-    const hasMatchingProgram = university.programs.some(program =>
+    const hasExactMatch = university.programs.some(program =>
       program.toLowerCase().includes(preferences.course.toLowerCase()) ||
       preferences.course.toLowerCase().includes(program.toLowerCase())
     );
-    if (hasMatchingProgram) {
+    
+    if (hasExactMatch) {
       matchScore += MATCH_WEIGHTS.COURSE;
+    } else {
+      // Give partial points for related programs
+      const courseKeywords = preferences.course.toLowerCase();
+      const hasRelatedProgram = university.programs.some(program => {
+        const programLower = program.toLowerCase();
+        return (
+          (courseKeywords.includes('computer') && (programLower.includes('information') || programLower.includes('engineering'))) ||
+          (courseKeywords.includes('business') && programLower.includes('administration')) ||
+          (courseKeywords.includes('engineering') && programLower.includes('technology')) ||
+          (courseKeywords.includes('information') && programLower.includes('computer'))
+        );
+      });
+      
+      if (hasRelatedProgram) {
+        matchScore += MATCH_WEIGHTS.COURSE * 0.5; // Half points for related programs
+      }
     }
   }
 
   // Location matching
   if (preferences.location && university.location) {
-    const locationMatch = university.location.toLowerCase().includes(
-      preferences.location.toLowerCase()
-    );
-    if (locationMatch) {
+    const userLocation = preferences.location.toLowerCase();
+    const uniLocation = university.location.toLowerCase();
+    
+    if (uniLocation.includes(userLocation) || userLocation.includes(uniLocation)) {
       matchScore += MATCH_WEIGHTS.LOCATION;
+    } else if (
+      // Same region matching (e.g., both in Cebu)
+      (userLocation.includes('cebu') && uniLocation.includes('cebu')) ||
+      (userLocation.includes('manila') && uniLocation.includes('manila')) ||
+      (userLocation.includes('davao') && uniLocation.includes('davao'))
+    ) {
+      matchScore += MATCH_WEIGHTS.LOCATION * 0.7; // Partial points for same region
     }
   }
 
@@ -104,12 +128,12 @@ export const getMatchedUniversities = (
   profileData: ProfileData,
   completionPercentage: number
 ): University[] => {
-  // Require at least 75% profile completion for meaningful matches
-  if (completionPercentage < 75) {
+  // Require at least 50% profile completion for meaningful matches
+  if (completionPercentage < 50) {
     return [];
   }
 
-  return universities
+  const scoredUniversities = universities
     .map(university => {
       const matchScore = calculateMatchScore(university, profileData);
       return {
@@ -122,6 +146,18 @@ export const getMatchedUniversities = (
       return matchScore >= MIN_MATCH_SCORE;
     })
     .sort((a, b) => b.matchPercentage - a.matchPercentage);
+
+  // If no matches found but user has some profile data, show top universities anyway
+  if (scoredUniversities.length === 0 && completionPercentage >= 25) {
+    return universities
+      .slice(0, 2) // Show top 2 universities
+      .map(university => ({
+        ...university,
+        matchPercentage: 60, // Default match percentage for fallback
+      }));
+  }
+
+  return scoredUniversities;
 };
 
 /**

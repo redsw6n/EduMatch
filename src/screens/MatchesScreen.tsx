@@ -31,6 +31,39 @@ const UNIVERSITIES_DATABASE: University[] = [
     ranking: '#15 in Regional Universities',
     matchPercentage: 95,
   },
+  {
+    id: '2',
+    name: 'University of San Carlos',
+    location: 'Talamban, Cebu',
+    fee: '₱95,000/year',
+    image: 'https://placehold.co/64x64',
+    programs: ['Computer Science', 'Engineering', 'Medicine', 'Business Administration', 'Education'],
+    acceptanceRate: '60%',
+    ranking: '#8 in Regional Universities',
+    matchPercentage: 90,
+  },
+  {
+    id: '3',
+    name: 'Cebu Institute of Technology',
+    location: 'N. Bacalso Ave, Cebu',
+    fee: '₱75,000/year',
+    image: 'https://placehold.co/64x64',
+    programs: ['Information Technology', 'Computer Engineering', 'Electronics Engineering', 'Business'],
+    acceptanceRate: '80%',
+    ranking: '#20 in Regional Universities',
+    matchPercentage: 85,
+  },
+  {
+    id: '4',
+    name: 'University of Cebu',
+    location: 'Sanciangko St, Cebu',
+    fee: '₱70,000/year',
+    image: 'https://placehold.co/64x64',
+    programs: ['Business Administration', 'Accounting', 'Education', 'Information Technology', 'Tourism'],
+    acceptanceRate: '85%',
+    ranking: '#25 in Regional Universities',
+    matchPercentage: 80,
+  },
 ];
 
 const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
@@ -160,9 +193,17 @@ const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
       <View style={styles.cardContainer}>
         <View style={styles.gradientCard}>
           <View style={styles.cardContent}>
-            <Text style={styles.cardTitle}>Want more personalized matches?</Text>
+            <Text style={styles.cardTitle}>
+              {completionPercentage < 50 
+                ? "Complete your profile to see matches" 
+                : "Want more personalized matches?"
+              }
+            </Text>
             <Text style={styles.cardDescription}>
-              Complete your profile and take our career assessment quiz to get tailored university recommendations.
+              {completionPercentage < 50 
+                ? `Your profile is ${completionPercentage}% complete. You need at least 50% completion to see university matches.`
+                : "Complete your profile and take our career assessment quiz to get tailored university recommendations."
+              }
             </Text>
             <View style={styles.buttonContainer}>
               <TouchableOpacity 
@@ -190,7 +231,10 @@ const MatchesScreen: React.FC<MatchesScreenProps> = ({ navigation }) => {
       <View style={styles.placeholderSection}>
         <Text style={styles.placeholderTitle}>Your Matches</Text>
         <Text style={styles.placeholderText}>
-          Complete your profile to see personalized university matches based on your preferences and academic profile.
+          {completionPercentage < 50 
+            ? `Profile completion: ${completionPercentage}%. Add your course preferences, location, and budget to see matches.`
+            : "Complete your profile to see personalized university matches based on your preferences and academic profile."
+          }
         </Text>
       </View>
     </>
