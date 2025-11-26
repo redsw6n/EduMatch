@@ -113,27 +113,6 @@ function HomeTabScreen() {
       fee: "₱ 80,000/year",
       image: "https://placehold.co/64x64"
     },
-    { 
-      id: "2", 
-      name: "Southwestern University PHINMA", 
-      location: "Urgello, Cebu",
-      fee: "₱ 80,000/year",
-      image: "https://placehold.co/64x64"
-    },
-    { 
-      id: "3", 
-      name: "Southwestern University PHINMA", 
-      location: "Urgello, Cebu",
-      fee: "₱ 80,000/year",
-      image: "https://placehold.co/64x64"
-    },
-    { 
-      id: "4", 
-      name: "Southwestern University PHINMA", 
-      location: "Urgello, Cebu",
-      fee: "₱ 80,000/year",
-      image: "https://placehold.co/64x64"
-    },
   ];
 
   return (
